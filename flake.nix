@@ -10,9 +10,5 @@
   outputs = { self, nixpkgs, nixpkgs-master, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let pkgs = nixpkgs-master.legacyPackages.${system};
-      in {
-        devShell = pkgs.mkShell {
-          buildInputs = with pkgs; [ nixfmt ];
-        };
-      });
+      in { devShell = pkgs.mkShell { buildInputs = with pkgs; [ nixfmt ]; }; });
 }

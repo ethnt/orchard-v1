@@ -1,1 +1,8 @@
+# Development tooling
 /.direnv/
+
+# Terraform
+/.terraform/
+.terraform.lock.hcl
+config.tf.json
+terraform.tfstate*

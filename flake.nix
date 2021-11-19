@@ -18,12 +18,16 @@
       let
         pkgs = nixpkgs-unstable.legacyPackages.${system};
         terraform = "${pkgs.terraform_0_15}/bin/terraform";
-        terranixConfiguration = terranix.lib.buildTerranix {
-          inherit pkgs;
-          terranix_config.imports = [ ./infra/config.nix ];
+        # terranixConfiguration = terranix.lib.buildTerranix {
+        #   inherit pkgs;
+        #   terranix_config.imports = [ ./infra/config.nix ];
+        # };
+        terraformConfiguration = terranix.lib.terranixConfiguration {
+          inherit system;
+          modules = [ ./infra/config.nix ];
         };
-      in {
-        apps = {
+      in rec {
+        apps = rec {
           infra = rec {
             type = "app";
 
@@ -31,27 +35,25 @@
               type = "app";
               program = toString (pkgs.writers.writeBash "compile" ''
                 if [[ -e config.tf.json ]]; then rm -f config.tf.json; fi
-                cp ${terranixConfiguration}/config.tf.json config.tf.json
+                cp ${terraformConfiguration}/config.tf.json config.tf.json
               '');
             };
 
             apply = {
               type = "app";
               program = toString (pkgs.writers.writeBash "apply" ''
-                if [[ -e config.tf.json ]]; then rm -f config.tf.json; fi
-                cp ${terranixConfiguration}/config.tf.json config.tf.json \
-                  && ${terraform} init \
-                  && ${terraform} apply
+                ${compile.program} \
+                  ${terraform} init \
+                  ${terraform} apply
               '');
             };
 
             destroy = {
               type = "app";
               program = toString (pkgs.writers.writeBash "destroy" ''
-                if [[ -e config.tf.json ]]; then rm -f config.tf.json; fi
-                cp ${terranixConfiguration}/config.tf.json config.tf.json \
-                  && ${terraform} init \
-                  && ${terraform} destroy
+                ${compile.program} \
+                  ${terraform} init \
+                  ${terraform} destroy
               '');
             };
           };
@@ -59,7 +61,9 @@
           deploy = {
             type = "app";
 
-            program = self.apps.${system}.infra.apply;
+            program = toString (pkgs.writers.writeBash "deploy" ''
+              ${infra.apply.program}
+            '');
           };
         };
 
@@ -74,6 +78,12 @@
           lint = runCodeAnalysis "nixfmt" ''
             ${pkgs.nixfmt}/bin/nixfmt --check \
               $(find . -type f -name '*.nix')
+          '';
+
+          validate = runCodeAnalysis "terraform-validate" ''
+            ${apps.infra.compile.program} \
+              && ${terraform} init \
+              && ${terraform} validate
           '';
         };
 

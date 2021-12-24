@@ -1,14 +1,11 @@
 { config, pkgs, ... }: {
+  imports = [ ../modules ];
+
+  time.timeZone = "America/New_York";
+
+  networking.firewall = { enable = true; };
+
   environment.systemPackages = with pkgs; [ htop ];
 
-  services.openssh = {
-    enable = true;
-    passwordAuthentication = false;
-  };
-
-  networking.firewall = {
-    enable = false;
-    allowedTCPPorts = [ 22 ];
-    allowedUDPPorts = [ 22 ];
-  };
+  orchard = { services = { openssh.enable = true; }; };
 }

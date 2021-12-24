@@ -10,42 +10,38 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, nixops, flake-utils }:
+  outputs =
+    { self, nixpkgs, nixpkgs-unstable, nixops, flake-utils, ... }@inputs:
     let
-      inherit (nixpkgs) lib;
+      utils = import ./lib/utils.nix {
+        inherit (nixpkgs) lib;
+        inherit inputs;
+      };
 
-      # List of all platforms we're supporting
-      platforms = [ "x86_64-linux" ];
+      inherit (utils) forAllSystems;
 
-      # Generates a nixpkgs configuration for each platform
       nixpkgsFor = let
         overlay-unstable = final: prev: {
           unstable = import inputs.nixpkgs-unstable {
-            system = final.system;
+            inherit (final) system;
             config.allowUnfree = true;
           };
         };
-      in flake-utils.forAllPlatforms (platform:
+      in forAllSystems (system:
         import nixpkgs {
-          system = platform;
+          inherit system;
           overlays = [ overlay-unstable ];
           config.allowUnfree = true;
         });
 
-      mkDeployment = { host, platform, machineName, machineConfiguration ?
-          ./machines + "/${machineName}/configuration.nix", secrets ? { } }: {
-            deployment = {
-              targetHost = host;
-              keys = secrets;
-            };
+      mkDeployment = { system, configuration }: {
+        nixpkgs = {
+          pkgs = nixpkgsFor.${system};
+          localSystem = { inherit system; };
+        };
 
-            nixpkgs = {
-              pkgs = nixpkgsFor.${platform};
-              localSystem.system = platform;
-            };
-
-            imports = [ machineConfiguration ];
-          };
+        imports = [ configuration ];
+      };
     in {
       nixopsConfigurations.default = {
         inherit nixpkgs;
@@ -59,20 +55,28 @@
 
         resources = import ./resources;
 
-        funnel = import ./machines/funnel;
+        funnel = mkDeployment {
+          configuration = ./machines/funnel/configuration.nix;
+          system = "x86_64-linux";
+        };
+
+        builder = mkDeployment {
+          configuration = ./machines/builder/configuration.nix;
+          system = "x86_64-linux";
+        };
       };
     } // flake-utils.lib.eachDefaultSystem (system:
       let pkgs = nixpkgs-unstable.legacyPackages.${system};
       in {
         devShell = pkgs.mkShell {
-          buildInputs = with pkgs;
-            [ nixfmt ] ++ [ nixops.defaultPackage."${system}" ];
+          nativeBuildInputs = with pkgs;
+            [ git git-crypt nixfmt ] ++ [ nixops.defaultPackage."${system}" ];
 
           shellHook = ''
-            export AWS_ACCESS_KEY_ID=foo
-            export AWS_SECRET_ACCESS_KEY=bar
             export NIXOPS_DEPLOYMENT=orchard
           '';
+
+          NIXOPS_STATE = "./state.nixops";
         };
       });
 }

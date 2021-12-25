@@ -11,6 +11,8 @@ in {
       type = types.listOf types.string;
       default = [ ];
     };
+
+    buildUserKey = mkOption { type = types.lines; };
   };
 
   config = mkIf cfg.enable {
@@ -23,7 +25,7 @@ in {
       isNormalUser = false;
       extraGroups = [ "wheel" ];
       group = "users";
-      isSystemUser = true;
+      openssh.authorizedKeys.keys = [ cfg.buildUserKey ];
     };
   };
 }

@@ -21,4 +21,28 @@ let
       config.allowUnfree = true;
     });
 
-in { inherit forAllSystems nixpkgsFor; }
+  vmBaseImage = { pkgs, ref ? "nixos-21.11"
+    , rev ? "1158f3463912d54cc981d61213839ec6c02570d3" }:
+    let
+      vbox_src = builtins.fetchGit {
+        url = "https://github.com/NixOS/nixpkgs";
+        inherit rev ref;
+      };
+      machine = inputs.nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          "${pkgs.nixops}/share/nix/nixops/virtualbox-image-nixops.nix"
+          ./base.nix
+        ];
+      };
+      ova = machine.config.system.build.virtualBoxOVA;
+    in pkgs.runCommand
+    "virtualbox-nixops-image-${machine.config.system.nixos.version}-v2" {
+      nativeBuildInputs = [ ova ];
+    } ''
+      mkdir ova
+      tar -xf ${ova}/*.ova -C ova
+      mv ova/nixos*.vmdk $out
+    '';
+
+in { inherit forAllSystems nixpkgsFor vmBaseImage; }

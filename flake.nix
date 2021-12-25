@@ -8,6 +8,9 @@
     nixops.url = "github:input-output-hk/nixops-flake";
 
     flake-utils.url = "github:numtide/flake-utils";
+
+    flakebox.url = "github:esselius/nix-flakebox";
+    flakebox.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -18,7 +21,7 @@
         inherit inputs;
       };
 
-      inherit (utils) forAllSystems;
+      inherit (utils) forAllSystems vmBaseImage;
 
       nixpkgsFor = let
         overlay-unstable = final: prev: {
@@ -64,8 +67,18 @@
           configuration = ./machines/builder/configuration.nix;
           system = "x86_64-linux";
         };
+
+        vm = { config, pkgs, ... }: {
+          deployment = {
+            targetEnv = "virtualbox";
+            virtualbox = {
+              memorySize = 2048;
+              headless = true;
+            };
+          };
+        };
       };
-    } // flake-utils.lib.eachDefaultSystem (system:
+    } // flake-utils.lib.eachSystem [ "x86_64-darwin" ] (system:
       let pkgs = nixpkgs-unstable.legacyPackages.${system};
       in {
         devShell = pkgs.mkShell {

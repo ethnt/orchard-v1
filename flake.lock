@@ -46,6 +46,26 @@
         "type": "github"
       }
     },
+    "flakebox": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1631879682,
+        "narHash": "sha256-lFzAWb4+LxMYfYv6KoJzzFxhepyLU0hMI2Xn04wgAvk=",
+        "owner": "esselius",
+        "repo": "nix-flakebox",
+        "rev": "d2c346510e5dc2ceac65f5546a5e04142fac3845",
+        "type": "github"
+      },
+      "original": {
+        "owner": "esselius",
+        "repo": "nix-flakebox",
+        "type": "github"
+      }
+    },
     "nixops": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -330,6 +350,7 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "flakebox": "flakebox",
         "nixops": "nixops",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-unstable": "nixpkgs-unstable"

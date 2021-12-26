@@ -7,14 +7,16 @@
 
     nixops.url = "github:input-output-hk/nixops-flake";
 
+    sops-nix.url = "github:Mic92/sops-nix";
+
     flake-utils.url = "github:numtide/flake-utils";
 
     flakebox.url = "github:esselius/nix-flakebox";
     flakebox.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs =
-    { self, nixpkgs, nixpkgs-unstable, nixops, flake-utils, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixops, sops-nix, flake-utils
+    , ... }@inputs:
     let
       utils = import ./lib/utils.nix {
         inherit (nixpkgs) lib;
@@ -54,7 +56,13 @@
           enableRollback = true;
         };
 
-        defaults = import ./machines/common.nix;
+        defaults = { ... }: {
+          imports = [{
+            imports = [ ./machines/common.nix ];
+            nix.nixPath = [ "nixpkgs=${nixpkgs}" ];
+            nixpkgs.pkgs = nixpkgsFor."x86_64-linux";
+          }];
+        };
 
         resources = import ./resources;
 
@@ -65,6 +73,11 @@
 
         builder = mkDeployment {
           configuration = ./machines/builder/configuration.nix;
+          system = "x86_64-linux";
+        };
+
+        lighthouse = mkDeployment {
+          configuration = ./machines/lighthouse/configuration.nix;
           system = "x86_64-linux";
         };
 
@@ -83,10 +96,20 @@
       in {
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs;
-            [ git git-crypt nixfmt ] ++ [ nixops.defaultPackage."${system}" ];
+            [
+              age
+              git
+              git-crypt
+              nebula
+              nixfmt
+              ssh-to-pgp
+              (pkgs.callPackage sops-nix { }).sops-import-keys-hook
+            ] ++ [ nixops.defaultPackage."${system}" ];
 
           shellHook = ''
             export NIXOPS_DEPLOYMENT=orchard
+            export AWS_ACCESS_KEY_ID=AKIAVPVCFCN36CMLR642
+            export AWS_SECRET_ACCESS_KEY=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
           '';
 
           NIXOPS_STATE = "./state.nixops";

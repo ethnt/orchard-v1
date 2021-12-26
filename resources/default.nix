@@ -24,6 +24,30 @@ in {
         sourceIp = "0.0.0.0/0";
       }];
     };
+
+    nebula-security-group = {
+      inherit (awsConfig) region;
+
+      description = "Security group for Nebula";
+      rules = [{
+        protocol = "udp";
+        fromPort = 4242;
+        toPort = 4242;
+        sourceIp = "0.0.0.0/0";
+      }];
+    };
+
+    zerotier-security-group = {
+      inherit (awsConfig) region;
+
+      description = "Security group for ZeroTier";
+      rules = [{
+        protocol = "udp";
+        fromPort = 9993;
+        toPort = 9993;
+        sourceIp = "0.0.0.0/0";
+      }];
+    };
   };
 
   route53HostedZones = {

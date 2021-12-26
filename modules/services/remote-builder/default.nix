@@ -23,6 +23,7 @@ in {
     users.extraUsers.builder = {
       createHome = false;
       isNormalUser = false;
+      isSystemUser = true;
       extraGroups = [ "wheel" ];
       group = "users";
       openssh.authorizedKeys.keys = [ cfg.buildUserKey ];

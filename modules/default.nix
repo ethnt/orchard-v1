@@ -4,5 +4,7 @@
     ./services/openssh
     ./services/pihole
     ./services/remote-builder
+    # ./services/nebula
+    # ./services/zerotier
   ];
 }

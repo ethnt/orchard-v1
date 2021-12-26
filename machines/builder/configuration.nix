@@ -8,20 +8,15 @@ in {
 
       instanceType = "t3.medium";
       keyPair = resources.ec2KeyPairs.deployment-key;
-      securityGroups = [ resources.ec2SecurityGroups.ssh-security-group ];
+      securityGroups = [
+        resources.ec2SecurityGroups.ssh-security-group
+        resources.ec2SecurityGroups.zerotier-security-group
+      ];
       ebsBoot = true;
       ebsInitialRootDiskSize = 50;
     };
 
     keys = { ssh-builder-key = { keyFile = ./keys/builder.pub; }; };
-  };
-
-  users.extraUsers.test = {
-    createHome = true;
-    isNormalUser = true;
-    extraGroups = [ "wheel" ];
-    group = "users";
-    password = "test";
   };
 
   orchard = {

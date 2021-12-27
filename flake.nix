@@ -81,7 +81,7 @@
           system = "x86_64-linux";
         };
       };
-    } // flake-utils.lib.eachSystem [ "x86_64-darwin" ] (system:
+    } // flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
       let pkgs = nixpkgs-unstable.legacyPackages.${system};
       in {
         devShell = pkgs.mkShell {

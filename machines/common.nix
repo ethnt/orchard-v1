@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }: {
   deployment.keys = {
     tailscale-auth-key = {
-      keyFile = ../modules/services/tailscale/keys/auth-key;
+      keyFile = ../secrets/tailscale-auth-key;
     };
   };
 

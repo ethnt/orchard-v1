@@ -103,10 +103,10 @@
               (pkgs.callPackage sops-nix { }).sops-import-keys-hook
             ] ++ [ nixops-plugged.defaultPackage.${system} ];
 
-          shellHook = ''
-            export NIXOPS_DEPLOYMENT=orchard
-          '';
+          AWS_ACCESS_KEY_ID = builtins.readFile ./secrets/aws-access-key-id;
+          AWS_SECRET_ACCESS_KEY = builtins.readFile ./secrets/aws-secret-access-key;
 
+          NIXOPS_DEPLOYMENT = "orchard";
           NIXOPS_STATE = "./state.nixops";
         };
       });

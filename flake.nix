@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-21.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-    nixops.url = "github:input-output-hk/nixops-flake";
+    nixops-plugged.url = "github:ethnt/nixops-plugged";
 
     sops-nix.url = "github:Mic92/sops-nix";
 
@@ -15,8 +15,8 @@
     flakebox.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixops, sops-nix, flake-utils
-    , ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixops-plugged, sops-nix
+    , flake-utils, ... }@inputs:
     let
       utils = import ./lib/utils.nix {
         inherit (nixpkgs) lib;
@@ -66,29 +66,19 @@
 
         resources = import ./resources;
 
-        funnel = mkDeployment {
-          configuration = ./machines/funnel/configuration.nix;
-          system = "x86_64-linux";
-        };
-
         builder = mkDeployment {
           configuration = ./machines/builder/configuration.nix;
           system = "x86_64-linux";
         };
 
-        lighthouse = mkDeployment {
-          configuration = ./machines/lighthouse/configuration.nix;
+        monitor = mkDeployment {
+          configuration = ./machines/monitor/configuration.nix;
           system = "x86_64-linux";
         };
 
-        vm = { config, pkgs, ... }: {
-          deployment = {
-            targetEnv = "virtualbox";
-            virtualbox = {
-              memorySize = 2048;
-              headless = true;
-            };
-          };
+        vm = mkDeployment {
+          configuration = ./machines/vm/configuration.nix;
+          system = "x86_64-linux";
         };
       };
     } // flake-utils.lib.eachSystem [ "x86_64-darwin" ] (system:
@@ -104,12 +94,10 @@
               nixfmt
               ssh-to-pgp
               (pkgs.callPackage sops-nix { }).sops-import-keys-hook
-            ] ++ [ nixops.defaultPackage."${system}" ];
+            ] ++ [ nixops-plugged.defaultPackage.${system} ];
 
           shellHook = ''
             export NIXOPS_DEPLOYMENT=orchard
-            export AWS_ACCESS_KEY_ID=AKIAVPVCFCN36CMLR642
-            export AWS_SECRET_ACCESS_KEY=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
           '';
 
           NIXOPS_STATE = "./state.nixops";

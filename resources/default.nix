@@ -14,37 +14,13 @@ in {
       }];
     };
 
-    pihole-security-group = {
+    tailscale-security-group = {
       inherit (awsConfig) region;
 
-      description = "Security group for PiHole";
+      description = "Security group for Tailscale networking";
       rules = [{
-        fromPort = 8000;
-        toPort = 8000;
-        sourceIp = "0.0.0.0/0";
-      }];
-    };
-
-    nebula-security-group = {
-      inherit (awsConfig) region;
-
-      description = "Security group for Nebula";
-      rules = [{
-        protocol = "udp";
-        fromPort = 4242;
-        toPort = 4242;
-        sourceIp = "0.0.0.0/0";
-      }];
-    };
-
-    zerotier-security-group = {
-      inherit (awsConfig) region;
-
-      description = "Security group for ZeroTier";
-      rules = [{
-        protocol = "udp";
-        fromPort = 9993;
-        toPort = 9993;
+        fromPort = 41641;
+        toPort = 41641;
         sourceIp = "0.0.0.0/0";
       }];
     };
@@ -58,11 +34,18 @@ in {
   };
 
   route53RecordSets = {
-    funnel-record-set = { resources, ... }: {
+    builder-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "funnel.orchard.computer.";
+      domainName = "builder.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.funnel ];
+      recordValues = [ resources.machines.builder ];
+    };
+
+    monitor-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "monitor.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.monitor ];
     };
   };
 }

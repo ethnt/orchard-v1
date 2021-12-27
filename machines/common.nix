@@ -1,8 +1,6 @@
-{ config, pkgs, ... }: {
-  deployment = {
-    keys = {
-      nebula-crt = { keyFile = ../modules/services/nebula/keys/ca.crt; };
-    };
+{ config, pkgs, lib, ... }: {
+  deployment.keys = {
+    tailscale-auth-key = { keyFile = ../modules/services/tailscale/keys/auth-key; };
   };
 
   imports = [ ../modules ];
@@ -11,15 +9,16 @@
 
   networking.firewall = { enable = true; };
 
-  environment.systemPackages = with pkgs; [ htop nebula ];
+  environment.systemPackages = with pkgs; [ htop ];
 
   orchard = {
     services = {
       openssh.enable = true;
-      # zerotierone = {
-      #   enable = true;
-      #   joinNetworks = [ "8bd5124fd6b8e05c" ];
-      # };
+
+      tailscale = {
+        enable = lib.mkDefault true;
+        authKeyFile = config.deployment.keys.tailscale-auth-key.path;
+      };
     };
   };
 }

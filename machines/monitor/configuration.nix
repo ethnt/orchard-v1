@@ -1,10 +1,10 @@
 { config, pkgs, resources, ... }:
-let awsConfig = import ../../config/aws.nix;
+let aws = import ../../config/aws.nix;
 in {
   deployment = {
     targetEnv = "ec2";
     ec2 = {
-      inherit (awsConfig) region;
+      inherit (aws) region;
 
       instanceType = "t3.small";
       keyPair = resources.ec2KeyPairs.deployment-key;
@@ -15,17 +15,7 @@ in {
       ebsBoot = true;
       ebsInitialRootDiskSize = 50;
     };
-
-    keys = { ssh-builder-key = { keyFile = ./keys/builder.pub; }; };
   };
 
-  orchard = {
-    services = {
-      remote-builder = {
-        enable = true;
-        emulatedSystems = [ "aarch64-linux" ];
-        buildUserKey = builtins.readFile ./keys/builder.pub;
-      };
-    };
-  };
+  orchard = { };
 }

@@ -1,1 +1,2 @@
 machines/*/keys/** filter=git-crypt diff=git-crypt
+modules/**/keys/** filter=git-crypt diff=git-crypt

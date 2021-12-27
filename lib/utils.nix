@@ -1,9 +1,9 @@
-{ lib, inputs }:
+{ self, lib, inputs }:
 
 let
   inherit (lib) genAttrs;
 
-  systems = [ "x86_64-linux" "aarch64-linux" ];
+  systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" ];
 
   forAllSystems = f: genAttrs systems (sys: f sys);
 
@@ -45,4 +45,11 @@ let
       mv ova/nixos*.vmdk $out
     '';
 
-in { inherit forAllSystems nixpkgsFor vmBaseImage; }
+  runCodeAnalysis = system: name: command:
+    nixpkgsFor.${system}.runCommand "orchard-${name}" { } ''
+      cd ${self}
+      ${command}
+      mkdir $out
+    '';
+
+in { inherit forAllSystems nixpkgsFor vmBaseImage runCodeAnalysis; }

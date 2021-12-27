@@ -20,10 +20,10 @@
     let
       utils = import ./lib/utils.nix {
         inherit (nixpkgs) lib;
-        inherit inputs;
+        inherit self inputs;
       };
 
-      inherit (utils) forAllSystems vmBaseImage;
+      inherit (utils) forAllSystems vmBaseImage runCodeAnalysis;
 
       nixpkgsFor = let
         overlay-unstable = final: prev: {
@@ -84,6 +84,13 @@
     } // flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
       let pkgs = nixpkgs-unstable.legacyPackages.${system};
       in {
+        checks = {
+          nixfmt = runCodeAnalysis system "nixfmt" ''
+            ${pkgs.nixfmt}/bin/nixfmt --check \
+              $(find . -type f -name '*.nix')
+          '';
+        };
+
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs;
             [

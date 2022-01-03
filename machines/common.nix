@@ -1,8 +1,10 @@
 { config, pkgs, lib, ... }: {
-  deployment.keys = {
-    tailscale-auth-key = {
-      keyFile = ../secrets/tailscale-auth-key;
-    };
+  sops = {
+    # Set the secrets file location
+    defaultSopsFile = ./secrets.yaml;
+
+    # These are common secrets used among every machine
+    secrets = { tailscale_auth_key = { sopsFile = ./secrets.yaml; }; };
   };
 
   imports = [ ../modules ];
@@ -19,7 +21,7 @@
 
       tailscale = {
         enable = lib.mkDefault true;
-        authKeyFile = config.deployment.keys.tailscale-auth-key.path;
+        authKeyFile = config.sops.secrets.tailscale_auth_key.path;
       };
     };
   };

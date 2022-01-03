@@ -4,6 +4,34 @@ My local network, managed by Nix.
 
 ## Troubleshooting
 
+### Setting up `sops` `age` keys on macOS
+
+```
+$ mkdir -p ~/Library/Application\ Support/sops/age
+$ age-keygen -o ~/Library/Application\ Support/sops/age/keys.txt
+```
+
+This will output a public key to add to `.sops.yaml`. Regenerate the `secrets.yaml` file with:
+
+```
+$ sops updatekeys secrets.yaml
+```
+
+### Adding machine `age` key for `sops`
+
+Try either of these options:
+
+```
+$ nixops ssh MACHINE_NAME -- "cat /etc/ssh/ssh_host_ed25519_key.pub" | ssh-to-age
+$ ssh-keyscan MACHINE_IP | ssh-to-age
+```
+
+This will output a public key to add to `.sops.yaml`. Regenerate the `secrets.yaml` file with:
+
+```
+$ sops updatekeys secrets.yaml
+```
+
 ### Unable to SSH into to VirtualBox VM
 
 Run the following to set up the networking properly:

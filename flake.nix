@@ -58,7 +58,7 @@
 
         defaults = { ... }: {
           imports = [{
-            imports = [ ./machines/common.nix ];
+            imports = [ ./machines/common.nix sops-nix.nixosModules.sops ];
             nix.nixPath = [ "nixpkgs=${nixpkgs}" ];
             nixpkgs.pkgs = nixpkgsFor."x86_64-linux";
           }];
@@ -93,21 +93,21 @@
 
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs;
-            [
-              age
-              git
-              git-crypt
-              nebula
-              nixfmt
-              ssh-to-pgp
-              (pkgs.callPackage sops-nix { }).sops-import-keys-hook
-            ] ++ [ nixops-plugged.defaultPackage.${system} ];
+            [ age git git-crypt nixfmt ssh-to-age sops ssh-to-pgp ] ++ [
+              nixops-plugged.defaultPackage.${system}
+              sops-nix.defaultPackage.${system}
+            ];
 
-          AWS_ACCESS_KEY_ID = builtins.readFile ./secrets/aws-access-key-id;
-          AWS_SECRET_ACCESS_KEY = builtins.readFile ./secrets/aws-secret-access-key;
+          # TODO: See if this can be done like the other environment variables
+          shellHook = ''
+            export AWS_ACCESS_KEY_ID=$(sops -d --extract '["aws_access_key_id"]' ./secrets.yaml)
+            export AWS_SECRET_ACCESS_KEY=$(sops -d --extract '["aws_secret_access_key"]' ./secrets.yaml)
+          '';
 
           NIXOPS_DEPLOYMENT = "orchard";
           NIXOPS_STATE = "./state.nixops";
+
+          SOPS_AGE_KEY_DIR = "$HOME/.config/sops/age";
         };
       });
 }

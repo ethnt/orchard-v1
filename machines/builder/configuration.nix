@@ -15,8 +15,6 @@ in {
       ebsBoot = true;
       ebsInitialRootDiskSize = 50;
     };
-
-    keys = { ssh-builder-key = { keyFile = ./keys/builder.pub; }; };
   };
 
   orchard = {
@@ -24,7 +22,7 @@ in {
       remote-builder = {
         enable = true;
         emulatedSystems = [ "aarch64-linux" ];
-        buildUserKey = builtins.readFile ./keys/builder.pub;
+        buildUserKeyFile = ./keys/builder.pub;
       };
     };
   };

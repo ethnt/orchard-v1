@@ -26,8 +26,11 @@ in {
     networking.firewall =
       mkIf cfg.openFirewall { allowedUDPPorts = [ cfg.port ]; };
 
-    systemd.services.tailscaled-authenticate = {
+    systemd.services."tailscale-authentication" = {
       serviceConfig.Type = "oneshot";
+
+      after = [ "tailscaled.service" ];
+      wantedBy = [ "tailscaled.service" ];
 
       script = ''
         ${pkgs.tailscale}/bin/tailscale up \

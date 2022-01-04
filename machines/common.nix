@@ -18,7 +18,7 @@
   orchard = {
     services = {
       fail2ban = {
-        enable = true;
+        enable = lib.mkDefault true;
         allowlist = [
           "127.0.0.0/8"
           "10.0.0.0/8"

@@ -7,5 +7,10 @@
     };
   };
 
-  orchard = { services = { tailscale = { enable = false; }; }; };
+  orchard = {
+    services = {
+      tailscale.enable = false;
+      fail2ban.enable = false;
+    };
+  };
 }

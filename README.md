@@ -32,6 +32,14 @@ This will output a public key to add to `.sops.yaml`. Regenerate the `secrets.ya
 $ sops updatekeys secrets.yaml
 ```
 
+### Machine does not have `/etc/ssh/ssh_hot_ed25519_key.pub`
+
+It's possible that a VM won't have the public key needed for `sops`. SSH into the machine and run:
+
+```
+$ ssh-keygen -t ed25519 -C "ethan.turkeltaub+orchard-computer@hey.com"
+```
+
 ### Unable to SSH into to VirtualBox VM
 
 Run the following to set up the networking properly:

@@ -11,6 +11,7 @@ in {
       securityGroups = [
         resources.ec2SecurityGroups.ssh-security-group
         resources.ec2SecurityGroups.tailscale-security-group
+        resources.ec2SecurityGroups.prometheus-node-exporter-security-group
       ];
       ebsBoot = true;
       ebsInitialRootDiskSize = 50;
@@ -19,6 +20,15 @@ in {
 
   orchard = {
     services = {
+      prometheus-exporter = {
+        enable = true;
+        host = "builder.orchard.computer";
+        node = {
+          enable = true;
+          openFirewall = true;
+        };
+      };
+
       remote-builder = {
         enable = true;
         emulatedSystems = [ "aarch64-linux" ];

@@ -19,3 +19,9 @@ creation_rules:
           - *machine_vm
           - *machine_monitor
           - *machine_builder
+
+  - path_regex: machines/monitor/secrets.yaml$
+    key_groups:
+      - age:
+          - *user_ethnt
+          - *machine_monitor

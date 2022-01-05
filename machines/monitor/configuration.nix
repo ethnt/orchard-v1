@@ -72,6 +72,21 @@ in {
         };
       };
 
+      loki = {
+        enable = true;
+        host = "monitor.orchard.computer";
+        openFirewall = true;
+      };
+
+      promtail = {
+        enable = true;
+        host = "monitor.orchard.computer";
+        lokiServerConfiguration = {
+          host = nodes.monitor.config.orchard.services.loki.host;
+          port = nodes.monitor.config.orchard.services.loki.port;
+        };
+      };
+
       grafana = {
         enable = true;
         domain = "grafana.orchard.computer";
@@ -84,14 +99,24 @@ in {
         environmentFile = config.sops.secrets.grafana_environment_file.path;
 
         provisioning = {
-          sources = [{
-            name = "Prometheus";
-            type = "prometheus";
-            access = "proxy";
-            url = "http://${config.orchard.services.prometheus.host}:${
-                toString config.orchard.services.prometheus.port
-              }";
-          }];
+          sources = [
+            {
+              name = "Prometheus";
+              type = "prometheus";
+              access = "proxy";
+              url = "http://${config.orchard.services.prometheus.host}:${
+                  toString config.orchard.services.prometheus.port
+                }";
+            }
+            {
+              name = "Loki";
+              type = "loki";
+              access = "proxy";
+              url = "http://${config.orchard.services.loki.host}:${
+                  toString config.orchard.services.loki.port
+                }";
+            }
+          ];
 
           notifiers = [{
             uid = "pushover";

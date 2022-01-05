@@ -1,4 +1,4 @@
-{ config, pkgs, resources, ... }:
+{ config, pkgs, resources, nodes, ... }:
 let awsConfig = import ../../config/aws.nix;
 in {
   deployment = {
@@ -28,6 +28,15 @@ in {
         node = {
           enable = true;
           openFirewall = true;
+        };
+      };
+
+      promtail = {
+        enable = true;
+        host = "builder.orchard.computer";
+        lokiServerConfiguration = {
+          host = nodes.monitor.config.orchard.services.loki.host;
+          port = nodes.monitor.config.orchard.services.loki.port;
         };
       };
 

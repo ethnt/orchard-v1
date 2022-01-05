@@ -13,7 +13,7 @@
 
   networking.firewall = { enable = true; };
 
-  environment.systemPackages = with pkgs; [ htop ];
+  environment.systemPackages = with pkgs; [ dig htop ];
 
   orchard = {
     services = {

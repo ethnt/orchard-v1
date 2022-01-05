@@ -8,10 +8,12 @@ in {
 
       instanceType = "t3.small";
       keyPair = resources.ec2KeyPairs.deployment-key;
-      securityGroups = [
-        resources.ec2SecurityGroups.ssh-security-group
-        resources.ec2SecurityGroups.tailscale-security-group
-        resources.ec2SecurityGroups.prometheus-node-exporter-security-group
+      associatePublicIpAddress = true;
+      subnetId = resources.vpcSubnets.public-subnet;
+      securityGroupIds = [
+        resources.ec2SecurityGroups.ssh-security-group.name
+        resources.ec2SecurityGroups.prometheus-node-exporter-security-group.name
+        resources.ec2SecurityGroups.tailscale-security-group.name
       ];
       ebsBoot = true;
       ebsInitialRootDiskSize = 50;

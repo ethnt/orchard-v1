@@ -1,8 +1,8 @@
 keys:
   - &user_ethnt age1xgvn6f36rkzmq2kfqx0g2xg90qrpar4hpu6fr8xc3s2kqw6dzqcssnslsv
-  - &machine_vm age18xpusmgyx80v6drx6gqc8g9ehp5g9qyv90z7lxrc8lwl22wx94qs8jjpqy
-  - &machine_monitor age1arpep6alxxe5m7yp5cn5pprtwn2fjjhj4w9chf8w3zgdyl723vcsjhnurm
-  - &machine_builder age15m6kjgp5mkhpfks35v64tg9g2kx25yaxwyhjdqlaz5d4k5gzqu7s43aps8
+  - &machine_vm age1xvpf073tnghe8frmatsdxxvgtrjx5q0ynv52spwkt6qfxcgejptsw9pr88
+  - &machine_monitor age1p38pmmw7e66jl59ljd8kkrt7zchrtph66h09ukrrcex5np4ksusqd3fcpa
+  - &machine_builder age1wghgcuw2ev2ndvp8ayt4a9gc5xcazfr45746pghztuyzemrel5xsy0wp52
 creation_rules:
   - path_regex: secrets.yaml$
     key_groups:

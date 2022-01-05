@@ -6,9 +6,7 @@ let cfg = config.orchard.services.prometheus-exporter;
 in {
   options.orchard.services.prometheus-exporter = {
     enable = mkEnableOption "Enable Prometheus exporters";
-    host = mkOption {
-      type = types.str;
-    };
+    host = mkOption { type = types.str; };
     node = mkOption {
       type = types.submodule {
         options = {

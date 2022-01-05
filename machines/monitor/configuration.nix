@@ -8,12 +8,15 @@ in {
 
       instanceType = "t3.small";
       keyPair = resources.ec2KeyPairs.deployment-key;
-      securityGroups = [
-        resources.ec2SecurityGroups.ssh-security-group
-        resources.ec2SecurityGroups.tailscale-security-group
-        resources.ec2SecurityGroups.http-security-group
-        resources.ec2SecurityGroups.prometheus-security-group
-        resources.ec2SecurityGroups.prometheus-node-exporter-security-group
+      associatePublicIpAddress = true;
+      subnetId = resources.vpcSubnets.public-subnet;
+      securityGroupIds = [
+        resources.ec2SecurityGroups.ssh-security-group.name
+        resources.ec2SecurityGroups.tailscale-security-group.name
+        resources.ec2SecurityGroups.http-security-group.name
+        resources.ec2SecurityGroups.prometheus-security-group.name
+        resources.ec2SecurityGroups.prometheus-node-exporter-security-group.name
+        resources.ec2SecurityGroups.loki-security-group.name
       ];
       ebsBoot = true;
       ebsInitialRootDiskSize = 50;
@@ -41,7 +44,7 @@ in {
               targets = [
                 "${nodes.monitor.config.orchard.services.prometheus-exporter.host}:${
                   toString
-                  notes.monitor.config.orchard.services.prometheus-exporter.node.port
+                  nodes.monitor.config.orchard.services.prometheus-exporter.node.port
                 }"
               ];
             }];

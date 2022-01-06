@@ -76,10 +76,15 @@
           system = "x86_64-linux";
         };
 
-        # vm = mkDeployment {
-        #   configuration = ./machines/vm/configuration.nix;
-        #   system = "x86_64-linux";
-        # };
+        vm = mkDeployment {
+          configuration = { config, pkgs, resources, ... }: {
+            imports = [ ./machines/vm/configuration.nix ];
+
+            deployment.virtualbox.disks.disk1.baseImage =
+              vmBaseImage { inherit pkgs; };
+          };
+          system = "x86_64-linux";
+        };
       };
     } // flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
       let pkgs = nixpkgs-unstable.legacyPackages.${system};

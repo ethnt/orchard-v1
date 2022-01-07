@@ -32,10 +32,12 @@
             config.allowUnfree = true;
           };
         };
+
+        customPackages = import ./pkgs;
       in forAllSystems (system:
         import nixpkgs {
           inherit system;
-          overlays = [ overlay-unstable ];
+          overlays = [ customPackages overlay-unstable ];
           config.allowUnfree = true;
         });
 
@@ -73,6 +75,11 @@
 
         monitor = mkDeployment {
           configuration = ./machines/monitor/configuration.nix;
+          system = "x86_64-linux";
+        };
+
+        networking = mkDeployment {
+          configuration = ./machines/networking/configuration.nix;
           system = "x86_64-linux";
         };
 

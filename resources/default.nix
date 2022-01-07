@@ -83,6 +83,39 @@ in {
       }];
       vpcId = resources.vpc.vpc-orchard;
     };
+
+    dns-security-group = { resources, ... }: {
+      inherit region;
+
+      description = "Security group for DNS requests";
+      rules = [
+        {
+          protocol = "tcp";
+          fromPort = 53;
+          toPort = 53;
+          sourceIp = "0.0.0.0/0";
+        }
+        {
+          protocol = "udp";
+          fromPort = 53;
+          toPort = 53;
+          sourceIp = "0.0.0.0/0";
+        }
+      ];
+      vpcId = resources.vpc.vpc-orchard;
+    };
+
+    dhcp-security-group = { resources, ... }: {
+      inherit region;
+      description = "Security group for DHCP requests";
+      vpcId = resources.vpc.vpc-orchard;
+      rules = [{
+        protocol = "udp";
+        fromPort = 67;
+        toPort = 67;
+        sourceIp = "0.0.0.0/0";
+      }];
+    };
   };
 
   route53HostedZones = {
@@ -112,6 +145,27 @@ in {
       domainName = "grafana.orchard.computer.";
       ttl = 15;
       recordValues = [ resources.machines.monitor ];
+    };
+
+    networking-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "networking.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.networking ];
+    };
+
+    adguard-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "adguard.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.networking ];
+    };
+
+    blocky-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "blocky.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.networking ];
     };
   };
 

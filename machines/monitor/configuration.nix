@@ -60,6 +60,17 @@ in {
               ];
             }];
           }
+          {
+            job_name = "networking";
+            static_configs = [{
+              targets = [
+                "${nodes.networking.config.orchard.services.prometheus-exporter.host}:${
+                  toString
+                  nodes.networking.config.orchard.services.prometheus-exporter.node.port
+                }"
+              ];
+            }];
+          }
         ];
       };
 

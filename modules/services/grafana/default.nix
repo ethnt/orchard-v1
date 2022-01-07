@@ -40,7 +40,6 @@ in {
         options = {
           enable = mkEnableOption "Enable Nginx for Grafana";
           host = mkOption { type = types.str; };
-          port = mkOption { type = types.port; };
         };
       };
     };
@@ -49,6 +48,8 @@ in {
   config = mkIf cfg.enable {
     services.grafana = {
       inherit (cfg) enable domain port addr;
+
+      package = pkgs.unstable.grafana;
 
       provision = {
         enable = true;

@@ -24,7 +24,7 @@ in {
     };
   };
 
-  sops.secrets = { pihole_environment_file = { sopsFile = ./secrets.yaml; }; };
+  environment.systemPackages = with pkgs; [ iftop nethogs ];
 
   orchard = {
     services = {
@@ -53,17 +53,8 @@ in {
         acme.email = "ethan.turkeltaub+orchard-computer@hey.com";
       };
 
-      adguard = {
-        enable = true;
-        openFirewall = true;
-        nginx = {
-          enable = true;
-          host = "adguard.orchard.computer";
-        };
-      };
-
       blocky = {
-        enable = false;
+        enable = true;
         configuration = {
           upstream = { default = [ "1.1.1.1" "1.0.0.1" ]; };
 
@@ -79,12 +70,19 @@ in {
               ];
             };
 
+            whiteLists = {
+              ads = [''
+                analytics.google.com
+                tagmanager.google.com
+              ''];
+            };
+
+            clientGroupsBlock = { default = [ "ads" ]; };
+
             blockType = "zeroIp";
           };
 
           caching = {
-            minTime = "5m";
-            maxTime = -1;
             maxItemsCount = 0;
             prefetching = true;
             prefetchExpires = "2h";

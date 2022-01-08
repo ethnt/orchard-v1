@@ -71,6 +71,10 @@ in {
               ];
             }];
           }
+          {
+            job_name = "blocky";
+            static_configs = [{ targets = [ "blocky.orchard.computer:80" ]; }];
+          }
         ];
       };
 

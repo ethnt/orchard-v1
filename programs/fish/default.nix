@@ -18,6 +18,10 @@ in {
         function find_nix_package
           fd $argv /nix/store -d 1 -t d | head -n 1
         end
+
+        # function __fish_command_not_found_handler --on-event fish_command_not_found
+        #   echo "command not found:" $argv
+        # end
       '';
     };
 

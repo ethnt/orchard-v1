@@ -13,12 +13,10 @@
 
   networking.firewall = { enable = true; };
 
-  environment.systemPackages = with pkgs; [ dig htop tmux ];
+  environment.systemPackages = with pkgs; [ dig htop nix-index tmux ];
 
   orchard = {
-    programs = {
-      fish.enable = true;
-    };
+    programs = { fish.enable = true; };
 
     services = {
       fail2ban = {

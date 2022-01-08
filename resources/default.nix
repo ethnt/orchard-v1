@@ -154,13 +154,6 @@ in {
       recordValues = [ resources.machines.networking ];
     };
 
-    adguard-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "adguard.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.networking ];
-    };
-
     blocky-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "blocky.orchard.computer.";

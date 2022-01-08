@@ -4,117 +4,49 @@ let
 in {
   ec2KeyPairs = { deployment-key = { inherit region; }; };
 
-  ec2SecurityGroups = {
-    http-security-group = { resources, ... }: {
+  ec2SecurityGroups = let
+    mkRule = { protocol ? "tcp", port, sourceIp ? "0.0.0.0/0" }: {
+      inherit protocol sourceIp;
+      fromPort = port;
+      toPort = port;
+    };
+    ssh = mkRule { port = 22; };
+    prometheus-node-exporter = mkRule { port = 9002; };
+    tailscale = mkRule { port = 41641; };
+    http = mkRule { port = 80; };
+    https = mkRule { port = 443; };
+    loki = mkRule { port = 3100; };
+    prometheus = mkRule { port = 9001; };
+    dns-udp = mkRule {
+      protocol = "udp";
+      port = 53;
+    };
+    dns-tcp = mkRule {
+      protocol = "udp";
+      port = 53;
+    };
+  in {
+    builder-security-group = { resources, ... }: {
       inherit region;
-
-      description = "Security group for HTTP networking";
-      rules = [
-        {
-          fromPort = 80;
-          toPort = 80;
-          sourceIp = "0.0.0.0/0";
-        }
-        {
-          fromPort = 443;
-          toPort = 443;
-          sourceIp = "0.0.0.0/0";
-        }
-      ];
+      description = "Security group for builder.orchard.computer";
+      rules = [ ssh prometheus-node-exporter tailscale ];
       vpcId = resources.vpc.vpc-orchard;
     };
 
-    prometheus-security-group = { resources, ... }: {
+    monitor-security-group = { resources, ... }: {
       inherit region;
-
-      description = "Security group for Prometheus monitoring";
-      rules = [{
-        fromPort = 9001;
-        toPort = 9001;
-        sourceIp = "0.0.0.0/0";
-      }];
+      description = "Security group for monitor.orchard.computer";
+      rules =
+        [ ssh prometheus-node-exporter tailscale http https prometheus loki ];
       vpcId = resources.vpc.vpc-orchard;
     };
 
-    loki-security-group = { resources, ... }: {
+    networking-security-group = { resources, ... }: {
       inherit region;
-
-      description = "Security group for Loki log aggregation";
-      rules = [{
-        fromPort = 3100;
-        toPort = 3100;
-        sourceIp = "0.0.0.0/0";
-      }];
+      description = "Security group for networking.orchard.computer";
+      rules =
+        [ ssh prometheus-node-exporter tailscale http https dns-udp dns-tcp ];
       vpcId = resources.vpc.vpc-orchard;
-    };
-
-    prometheus-node-exporter-security-group = { resources, ... }: {
-      inherit region;
-
-      description = "Security group for the Prometheus Node Exporter";
-      rules = [{
-        fromPort = 9002;
-        toPort = 9002;
-        sourceIp = "0.0.0.0/0";
-      }];
-      vpcId = resources.vpc.vpc-orchard;
-    };
-
-    tailscale-security-group = { resources, ... }: {
-      inherit region;
-
-      description = "Security group for Tailscale networking";
-      rules = [{
-        fromPort = 41641;
-        toPort = 41641;
-        sourceIp = "0.0.0.0/0";
-      }];
-      vpcId = resources.vpc.vpc-orchard;
-    };
-
-    ssh-security-group = { resources, ... }: {
-      inherit region;
-
-      description = "Security group for SSH access";
-      rules = [{
-        fromPort = 22;
-        toPort = 22;
-        sourceIp = "0.0.0.0/0";
-      }];
-      vpcId = resources.vpc.vpc-orchard;
-    };
-
-    dns-security-group = { resources, ... }: {
-      inherit region;
-
-      description = "Security group for DNS requests";
-      rules = [
-        {
-          protocol = "tcp";
-          fromPort = 53;
-          toPort = 53;
-          sourceIp = "0.0.0.0/0";
-        }
-        {
-          protocol = "udp";
-          fromPort = 53;
-          toPort = 53;
-          sourceIp = "0.0.0.0/0";
-        }
-      ];
-      vpcId = resources.vpc.vpc-orchard;
-    };
-
-    dhcp-security-group = { resources, ... }: {
-      inherit region;
-      description = "Security group for DHCP requests";
-      vpcId = resources.vpc.vpc-orchard;
-      rules = [{
-        protocol = "udp";
-        fromPort = 67;
-        toPort = 67;
-        sourceIp = "0.0.0.0/0";
-      }];
     };
   };
 

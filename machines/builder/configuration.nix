@@ -10,11 +10,8 @@ in {
       keyPair = resources.ec2KeyPairs.deployment-key;
       associatePublicIpAddress = true;
       subnetId = resources.vpcSubnets.public-subnet;
-      securityGroupIds = [
-        resources.ec2SecurityGroups.ssh-security-group.name
-        resources.ec2SecurityGroups.prometheus-node-exporter-security-group.name
-        resources.ec2SecurityGroups.tailscale-security-group.name
-      ];
+      securityGroupIds =
+        [ resources.ec2SecurityGroups.builder-security-group.name ];
       ebsBoot = true;
       ebsInitialRootDiskSize = 50;
     };

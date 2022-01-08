@@ -13,11 +13,7 @@ in {
       associatePublicIpAddress = true;
       subnetId = resources.vpcSubnets.public-subnet;
       securityGroupIds = [
-        resources.ec2SecurityGroups.ssh-security-group.name
-        resources.ec2SecurityGroups.prometheus-node-exporter-security-group.name
-        resources.ec2SecurityGroups.tailscale-security-group.name
-        resources.ec2SecurityGroups.http-security-group.name
-        resources.ec2SecurityGroups.dns-security-group.name
+        resources.ec2SecurityGroups.networking-security-group.name
       ];
       ebsBoot = true;
       ebsInitialRootDiskSize = 15;

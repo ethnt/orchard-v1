@@ -12,9 +12,8 @@ in {
       keyPair = resources.ec2KeyPairs.deployment-key;
       associatePublicIpAddress = true;
       subnetId = resources.vpcSubnets.public-subnet;
-      securityGroupIds = [
-        resources.ec2SecurityGroups.networking-security-group.name
-      ];
+      securityGroupIds =
+        [ resources.ec2SecurityGroups.networking-security-group.name ];
       ebsBoot = true;
       ebsInitialRootDiskSize = 15;
     };

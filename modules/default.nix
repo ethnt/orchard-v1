@@ -1,5 +1,7 @@
 {
   imports = [
+    ./services/adguard
+    ./services/blocky
     ./services/docker
     ./services/grafana
     ./services/fail2ban

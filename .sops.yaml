@@ -3,6 +3,7 @@ keys:
   - &machine_vm age1xvpf073tnghe8frmatsdxxvgtrjx5q0ynv52spwkt6qfxcgejptsw9pr88
   - &machine_monitor age1p38pmmw7e66jl59ljd8kkrt7zchrtph66h09ukrrcex5np4ksusqd3fcpa
   - &machine_builder age1wghgcuw2ev2ndvp8ayt4a9gc5xcazfr45746pghztuyzemrel5xsy0wp52
+  - &machine_networking age1nsjdq3zln9rt9vjt03qy6rzakvxlc870qf6y0kus93mxeqrs45ksfwp5fa
 creation_rules:
   - path_regex: secrets.yaml$
     key_groups:
@@ -11,6 +12,7 @@ creation_rules:
           - *machine_vm
           - *machine_monitor
           - *machine_builder
+          - *machine_networking
 
   - path_regex: machines/secrets.yaml$
     key_groups:
@@ -19,9 +21,16 @@ creation_rules:
           - *machine_vm
           - *machine_monitor
           - *machine_builder
+          - *machine_networking
 
   - path_regex: machines/monitor/secrets.yaml$
     key_groups:
       - age:
           - *user_ethnt
           - *machine_monitor
+
+  - path_regex: machines/networking/secrets.yaml$
+    key_groups:
+      - age:
+          - *user_ethnt
+          - *machine_networking

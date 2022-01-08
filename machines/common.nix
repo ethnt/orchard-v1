@@ -7,15 +7,17 @@
     secrets = { tailscale_auth_key = { sopsFile = ./secrets.yaml; }; };
   };
 
-  imports = [ ../modules ];
+  imports = [ ../modules ../programs ];
 
   time.timeZone = "America/New_York";
 
   networking.firewall = { enable = true; };
 
-  environment.systemPackages = with pkgs; [ dig htop ];
+  environment.systemPackages = with pkgs; [ dig htop nix-index tmux ];
 
   orchard = {
+    programs = { fish.enable = true; };
+
     services = {
       fail2ban = {
         enable = lib.mkDefault true;

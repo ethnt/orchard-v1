@@ -66,6 +66,18 @@ in {
             }];
           }
           {
+            job_name = "bastion";
+            static_configs = [{
+              targets = [
+                "${nodes.bastion.config.orchard.services.prometheus-exporter.host}:${
+                  toString
+                  nodes.bastion.config.orchard.services.prometheus-exporter.node.port
+                }"
+              ];
+            }];
+          }
+
+          {
             job_name = "blocky";
             static_configs = [{ targets = [ "blocky.orchard.computer:80" ]; }];
           }

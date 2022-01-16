@@ -83,6 +83,11 @@
           system = "x86_64-linux";
         };
 
+        bastion = mkDeployment {
+          configuration = ./machines/bastion/configuration.nix;
+          system = "x86_64-linux";
+        };
+
         # vm = mkDeployment {
         #   configuration = ./machines/vm/configuration.nix;
         #   system = "x86_64-linux";

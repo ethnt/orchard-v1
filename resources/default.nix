@@ -92,6 +92,13 @@ in {
       ttl = 15;
       recordValues = [ resources.machines.networking ];
     };
+
+    bastion-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "bastion.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.bastion.deployment.targetHost ];
+    };
   };
 
   vpc = {

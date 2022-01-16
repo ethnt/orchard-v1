@@ -37,9 +37,3 @@ creation_rules:
       - age:
           - *user_ethnt
           - *machine_networking
-
-  - path_regex: machines/bastion/secrets.yaml$
-    key_groups:
-      - age:
-          - *user_ethnt
-          - *machine_bastion

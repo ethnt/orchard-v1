@@ -6,6 +6,7 @@
     ./services/grafana
     ./services/fail2ban
     ./services/loki
+    ./services/nebula
     ./services/openssh
     ./services/prometheus
     ./services/prometheus-exporter

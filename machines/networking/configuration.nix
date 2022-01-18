@@ -19,10 +19,24 @@ in {
     };
   };
 
+  sops.secrets = {
+    nebula_ca_cert = { sopsFile = ../secrets.yaml; };
+    nebula_host_key = { sopsFile = ./secrets.yaml; };
+    nebula_host_cert = { sopsFile = ./secrets.yaml; };
+  };
+
   environment.systemPackages = with pkgs; [ iftop nethogs ];
 
   orchard = {
     services = {
+      nebula = {
+        enable = true;
+        isLighthouse = true;
+        caCert = config.sops.secrets.nebula_ca_cert.path;
+        hostKey = config.sops.secrets.nebula_host_key.path;
+        hostCert = config.sops.secrets.nebula_host_cert.path;
+      };
+
       prometheus-exporter = {
         inherit host;
 

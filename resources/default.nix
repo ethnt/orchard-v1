@@ -22,9 +22,18 @@ in {
       port = 53;
     };
     dns-tcp = mkRule {
-      protocol = "udp";
+      protocol = "tcp";
       port = 53;
     };
+    nebula-udp = mkRule {
+      protocol = "udp";
+      port = 4242;
+    };
+    nebula-tcp = mkRule {
+      protocol = "tcp";
+      port = 4242;
+    };
+    nebula-metrics = mkRule { port = 4243; };
   in {
     builder-security-group = { resources, ... }: {
       inherit region;
@@ -36,16 +45,36 @@ in {
     monitor-security-group = { resources, ... }: {
       inherit region;
       description = "Security group for monitor.orchard.computer";
-      rules =
-        [ ssh prometheus-node-exporter tailscale http https prometheus loki ];
+      rules = [
+        ssh
+        prometheus-node-exporter
+        tailscale
+        http
+        https
+        prometheus
+        loki
+        nebula-udp
+        nebula-tcp
+        nebula-metrics
+      ];
       vpcId = resources.vpc.vpc-orchard;
     };
 
     networking-security-group = { resources, ... }: {
       inherit region;
       description = "Security group for networking.orchard.computer";
-      rules =
-        [ ssh prometheus-node-exporter tailscale http https dns-udp dns-tcp ];
+      rules = [
+        ssh
+        prometheus-node-exporter
+        tailscale
+        http
+        https
+        dns-udp
+        dns-tcp
+        nebula-udp
+        nebula-tcp
+        nebula-metrics
+      ];
       vpcId = resources.vpc.vpc-orchard;
     };
   };

@@ -26,15 +26,26 @@ in {
     networking.firewall =
       mkIf cfg.openFirewall { allowedUDPPorts = [ cfg.port ]; };
 
-    systemd.services."tailscale-authentication" = {
+    systemd.services."tailscale-autoconnect" = {
       serviceConfig.Type = "oneshot";
 
       after = [ "tailscaled.service" ];
       wantedBy = [ "tailscaled.service" ];
 
       script = ''
-        ${pkgs.tailscale}/bin/tailscale up \
-          --authkey=$(cat ${cfg.authKeyFile}) \
+        # Wait for tailscaled to be ready
+        sleep 2
+
+        # Check if we're already using Tailscale
+        status="$(${pkgs.tailscale}/bin/tailscale status -json | ${pkgs.jq}/bin/jq -r .BackendState)"
+        if [ $status = "Running" ]; then
+          exit 0
+        fi
+
+        if [ -f "${cfg.authKeyFile}" ]; then
+          ${pkgs.tailscale}/bin/tailscale up \
+            --authkey=$(cat ${cfg.authKeyFile})
+        fi
       '';
     };
   };

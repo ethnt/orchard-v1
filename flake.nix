@@ -85,11 +85,6 @@
           system = "x86_64-linux";
         };
 
-        networking = mkDeployment {
-          configuration = ./machines/networking/configuration.nix;
-          system = "x86_64-linux";
-        };
-
         bastion = mkDeployment {
           configuration = ./machines/bastion/configuration.nix;
           system = "x86_64-linux";

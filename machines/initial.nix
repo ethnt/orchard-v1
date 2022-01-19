@@ -1,12 +1,4 @@
 { config, pkgs, lib, ... }: {
-  sops = {
-    # Set the secrets file location
-    defaultSopsFile = ./secrets.yaml;
-
-    # These are common secrets used on every machine
-    secrets = { tailscale_auth_key = { sopsFile = ./secrets.yaml; }; };
-  };
-
   imports = [ ../modules ../programs ];
 
   time.timeZone = "America/New_York";
@@ -32,11 +24,6 @@
       };
 
       openssh.enable = true;
-
-      tailscale = {
-        enable = lib.mkDefault true;
-        authKeyFile = config.sops.secrets.tailscale_auth_key.path;
-      };
     };
   };
 }

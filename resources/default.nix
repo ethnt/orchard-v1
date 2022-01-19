@@ -99,6 +99,13 @@ in {
       ttl = 15;
       recordValues = [ resources.machines.bastion.deployment.targetHost ];
     };
+
+    htpc-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "htpc.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.htpc.deployment.targetHost ];
+    };
   };
 
   vpc = {

@@ -106,13 +106,6 @@ in {
       ttl = 15;
       recordValues = [ resources.machines.htpc.deployment.targetHost ];
     };
-
-    sonarr-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "sonarr.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
-    };
   };
 
   vpc = {

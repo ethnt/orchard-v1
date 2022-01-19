@@ -41,13 +41,20 @@
           config.allowUnfree = true;
         });
 
-      mkDeployment = { system, configuration }: {
+      mkDeployment = { system, configuration, initialDeploy ? false }: {
         nixpkgs = {
           pkgs = nixpkgsFor.${system};
           localSystem = { inherit system; };
         };
 
-        imports = [ configuration ];
+        # TODO: This is a weird hack to prevent sops-nix from failing the activation on the initial deploy, leading to
+        #   NixOps locking itself out of the machine
+        imports = let
+          common = if initialDeploy then
+            ./machines/initial.nix
+          else
+            ./machines/common.nix;
+        in [ common configuration ];
       };
     in {
       nixopsConfigurations.default = {
@@ -60,7 +67,7 @@
 
         defaults = { ... }: {
           imports = [{
-            imports = [ ./machines/common.nix sops-nix.nixosModules.sops ];
+            imports = [ sops-nix.nixosModules.sops ];
             nix.nixPath = [ "nixpkgs=${nixpkgs}" ];
             nixpkgs.pkgs = nixpkgsFor."x86_64-linux";
           }];
@@ -85,6 +92,11 @@
 
         bastion = mkDeployment {
           configuration = ./machines/bastion/configuration.nix;
+          system = "x86_64-linux";
+        };
+
+        htpc = mkDeployment {
+          configuration = ./machines/htpc/configuration.nix;
           system = "x86_64-linux";
         };
 

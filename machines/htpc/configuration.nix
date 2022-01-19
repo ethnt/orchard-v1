@@ -1,7 +1,5 @@
 { config, pkgs, resources, nodes, ... }: {
-  deployment = { targetHost = "100.101.26.126"; };
-
-  networking.publicIPv4 = "68.173.239.21";
+  deployment = { targetHost = "100.117.182.50"; };
 
   imports = [ ./hardware-configuration.nix ];
 
@@ -13,8 +11,8 @@
   orchard = {
     services = {
       prometheus-exporter = {
-        enable = true;
-        host = "bastion.orchard.computer";
+        enable = false;
+        host = "htpc.orchard.computer";
         node = {
           enable = true;
           openFirewall = true;
@@ -22,17 +20,17 @@
       };
 
       promtail = {
-        enable = true;
-        host = "bastion.orchard.computer";
+        enable = false;
+        host = "htpc.orchard.computer";
         lokiServerConfiguration = {
           host = nodes.monitor.config.orchard.services.loki.host;
           port = nodes.monitor.config.orchard.services.loki.port;
         };
       };
 
-      nginx = {
+      sonarr = {
         enable = true;
-        acme.email = "ethan.turkeltaub+orchard-computer@hey.com";
+        openFirewall = true;
       };
     };
   };

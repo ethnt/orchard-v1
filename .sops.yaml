@@ -5,6 +5,7 @@ keys:
   - &machine_builder age1wghgcuw2ev2ndvp8ayt4a9gc5xcazfr45746pghztuyzemrel5xsy0wp52
   - &machine_networking age1nsjdq3zln9rt9vjt03qy6rzakvxlc870qf6y0kus93mxeqrs45ksfwp5fa
   - &machine_bastion age1xmluwufsyzqz5zghdw28ll3gfkyf7veljdzhgnnxtw6y65aajdhq3syd4j
+  - &machine_htpc age19neap0vqy9cjc96ucaffrewcrvlsmfrd7v8dnvcr0e596lhvw9ysv8402y
 creation_rules:
   - path_regex: secrets.yaml$
     key_groups:
@@ -15,6 +16,7 @@ creation_rules:
           - *machine_builder
           - *machine_networking
           - *machine_bastion
+          - *machine_htpc
 
   - path_regex: machines/secrets.yaml$
     key_groups:
@@ -25,6 +27,7 @@ creation_rules:
           - *machine_builder
           - *machine_networking
           - *machine_bastion
+          - *machine_htpc
 
   - path_regex: machines/monitor/secrets.yaml$
     key_groups:

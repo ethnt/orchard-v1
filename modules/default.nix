@@ -7,11 +7,12 @@
     ./services/fail2ban
     ./services/loki
     ./services/openssh
+    ./services/nginx
     ./services/prometheus
     ./services/prometheus-exporter
     ./services/promtail
-    ./services/nginx
     ./services/remote-builder
+    ./services/sonarr
     ./services/tailscale
   ];
 }

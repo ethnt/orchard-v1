@@ -26,26 +26,11 @@ in {
       port = 53;
     };
   in {
-    builder-security-group = { resources, ... }: {
-      inherit region;
-      description = "Security group for builder.orchard.computer";
-      rules = [ ssh prometheus-node-exporter tailscale ];
-      vpcId = resources.vpc.vpc-orchard;
-    };
-
     monitor-security-group = { resources, ... }: {
       inherit region;
       description = "Security group for monitor.orchard.computer";
       rules =
         [ ssh prometheus-node-exporter tailscale http https prometheus loki ];
-      vpcId = resources.vpc.vpc-orchard;
-    };
-
-    networking-security-group = { resources, ... }: {
-      inherit region;
-      description = "Security group for networking.orchard.computer";
-      rules =
-        [ ssh prometheus-node-exporter tailscale http https dns-udp dns-tcp ];
       vpcId = resources.vpc.vpc-orchard;
     };
   };
@@ -58,13 +43,6 @@ in {
   };
 
   route53RecordSets = {
-    builder-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "builder.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.builder ];
-    };
-
     monitor-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "monitor.orchard.computer.";
@@ -77,20 +55,6 @@ in {
       domainName = "grafana.orchard.computer.";
       ttl = 15;
       recordValues = [ resources.machines.monitor ];
-    };
-
-    networking-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "networking.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.networking ];
-    };
-
-    blocky-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "blocky.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.networking ];
     };
 
     bastion-record-set = { resources, ... }: {

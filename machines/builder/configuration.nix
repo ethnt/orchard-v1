@@ -1,26 +1,35 @@
-{ config, pkgs, resources, nodes, ... }:
-let awsConfig = import ../../config/aws.nix;
-in {
-  deployment = {
-    targetEnv = "ec2";
-    ec2 = {
-      inherit (awsConfig) region;
+{ config, pkgs, resources, nodes, ... }: {
+  deployment = { targetHost = "192.168.1.219"; };
 
-      instanceType = "t3.small";
-      keyPair = resources.ec2KeyPairs.deployment-key;
-      associatePublicIpAddress = true;
-      subnetId = resources.vpcSubnets.public-subnet;
-      securityGroupIds =
-        [ resources.ec2SecurityGroups.builder-security-group.name ];
-      ebsBoot = true;
-      ebsInitialRootDiskSize = 50;
-    };
+  imports = [ ./hardware-configuration.nix ];
+
+  sops.secrets = { innernet_private_key = { sopsFile = ./secrets.yaml; }; };
+
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
   };
 
   orchard = {
     services = {
+      innernet = {
+        client.orchard = {
+          enable = true;
+          settings = {
+            interface = {
+              address = "192.168.104.66/22";
+              privateKeyFile = config.sops.secrets.innernet_private_key.path;
+            };
+            server = {
+              inherit (nodes.bastion.config.orchard.services.innernet.server.orchard.settings)
+                publicKey externalEndpoint internalEndpoint;
+            };
+          };
+        };
+      };
+
       prometheus-exporter = {
-        enable = true;
+        enable = false;
         host = "builder.orchard.computer";
         node = {
           enable = true;
@@ -29,7 +38,7 @@ in {
       };
 
       promtail = {
-        enable = true;
+        enable = false;
         host = "builder.orchard.computer";
         lokiServerConfiguration = {
           host = nodes.monitor.config.orchard.services.loki.host;
@@ -38,7 +47,7 @@ in {
       };
 
       remote-builder = {
-        enable = true;
+        enable = false;
         emulatedSystems = [ "aarch64-linux" ];
         buildUserKeyFile = ./keys/builder.pub;
       };

@@ -66,6 +66,11 @@
                 cidr = "internal";
                 publicKey = "17Zh1Yp1EPSIOY5WiOzexWAIW8ScO6ZKpo1UJM/wwV4=";
               };
+              builder = {
+                ip = "192.168.104.66";
+                cidr = "internal";
+                publicKey = "bIZ9lorQgfFDac3Hi2E5ZPcC5ujlvZo/6yhJI7rvHwE=";
+              };
             };
           };
         };

@@ -1,18 +1,23 @@
 {
   imports = [
     ./services/adguard
-    ./services/blocky
     ./services/docker
     ./services/fail2ban
     ./services/grafana
-    ./services/innernet
     ./services/loki
+    ./services/nebula
     ./services/nginx
+    ./services/nzbget
     ./services/openssh
+    ./services/plex
     ./services/prometheus
     ./services/prometheus-exporter
     ./services/promtail
+    ./services/pve-exporter
+    ./services/radarr
     ./services/remote-builder
+    ./services/sonarr
     ./services/tailscale
+    ./services/unifi
   ];
 }

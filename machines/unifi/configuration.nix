@@ -1,24 +1,25 @@
 { config, pkgs, resources, nodes, ... }: {
-  deployment = { targetHost = "192.168.1.198"; };
+  deployment = { targetHost = "192.168.1.11"; };
 
   imports = [ ./hardware-configuration.nix ];
 
-  networking.publicIPv4 = "192.168.1.219";
+  networking.publicIPv4 = "192.168.1.11";
+  networking.privateIPv4 = "192.168.1.11";
 
-  sops.secrets = {
-    # nebula_ca_cert = { sopsFile = ../secrets.yaml; };
-    # nebula_host_key = { sopsFile = ./secrets.yaml; };
-    # nebula_host_cert = { sopsFile = ./secrets.yaml; };
-  };
+  # sops.secrets = {
+  #   nebula_ca_cert = { sopsFile = ../secrets.yaml; };
+  #   nebula_host_key = { sopsFile = ./secrets.yaml; };
+  #   nebula_host_cert = { sopsFile = ./secrets.yaml; };
+  # };
 
   boot.loader = {
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
   };
 
-  system.stateVersion = "21.11";
-
   services.qemuGuest.enable = true;
+
+  system.stateVersion = "21.11";
 
   orchard = {
     services = {
@@ -36,26 +37,25 @@
 
       prometheus-exporter = {
         enable = true;
-        host = "builder";
+        host = "unifi";
         node = {
           enable = true;
           openFirewall = true;
         };
       };
 
+      unifi = {
+        enable = true;
+        openFirewall = true;
+      };
+
       promtail = {
         enable = true;
-        host = "builder";
+        host = "unifi";
         lokiServerConfiguration = {
           host = nodes.monitor.config.networking.privateIPv4;
           port = nodes.monitor.config.orchard.services.loki.port;
         };
-      };
-
-      remote-builder = {
-        enable = true;
-        emulatedSystems = [ "aarch64-linux" ];
-        buildUserKeyFile = ./keys/builder.pub;
       };
     };
   };

@@ -11,11 +11,19 @@ in {
         options = { email = mkOption { type = types.str; }; };
       };
     };
+    virtualHosts = mkOption {
+      type = types.attrs;
+      default = { };
+    };
+    upstreams = mkOption {
+      type = types.attrs;
+      default = { };
+    };
   };
 
   config = mkIf cfg.enable {
     services.nginx = {
-      enable = true;
+      inherit (cfg) enable virtualHosts upstreams;
 
       package =
         pkgs.nginx.override { modules = [ pkgs.nginxModules.fancyindex ]; };

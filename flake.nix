@@ -2,7 +2,7 @@
   description = "orchard";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-21.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-21.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
     nixops-plugged.url = "github:ethnt/nixops-plugged";
@@ -51,7 +51,14 @@
         #   NixOps locking itself out of the machine
         imports = let
           common = if initialDeploy then
-            ./machines/initial.nix
+            ({ config, lib, pkgs, ... }: {
+              imports = [ ./modules ./programs ];
+
+              orchard = {
+                programs = { fish.enable = true; };
+                services = { openssh.enable = true; };
+              };
+            })
           else
             ./machines/common.nix;
         in [ common configuration ];
@@ -80,11 +87,6 @@
           system = "x86_64-linux";
         };
 
-        monitor = mkDeployment {
-          configuration = ./machines/monitor/configuration.nix;
-          system = "x86_64-linux";
-        };
-
         bastion = mkDeployment {
           configuration = ./machines/bastion/configuration.nix;
           system = "x86_64-linux";
@@ -92,6 +94,16 @@
 
         htpc = mkDeployment {
           configuration = ./machines/htpc/configuration.nix;
+          system = "x86_64-linux";
+        };
+
+        unifi = mkDeployment {
+          configuration = ./machines/unifi/configuration.nix;
+          system = "x86_64-linux";
+        };
+
+        monitor = mkDeployment {
+          configuration = ./machines/monitor/configuration.nix;
           system = "x86_64-linux";
         };
 

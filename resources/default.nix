@@ -4,37 +4,6 @@ let
 in {
   ec2KeyPairs = { deployment-key = { inherit region; }; };
 
-  ec2SecurityGroups = let
-    mkRule = { protocol ? "tcp", port, sourceIp ? "0.0.0.0/0" }: {
-      inherit protocol sourceIp;
-      fromPort = port;
-      toPort = port;
-    };
-    ssh = mkRule { port = 22; };
-    prometheus-node-exporter = mkRule { port = 9002; };
-    tailscale = mkRule { port = 41641; };
-    http = mkRule { port = 80; };
-    https = mkRule { port = 443; };
-    loki = mkRule { port = 3100; };
-    prometheus = mkRule { port = 9001; };
-    dns-udp = mkRule {
-      protocol = "udp";
-      port = 53;
-    };
-    dns-tcp = mkRule {
-      protocol = "udp";
-      port = 53;
-    };
-  in {
-    monitor-security-group = { resources, ... }: {
-      inherit region;
-      description = "Security group for monitor.orchard.computer";
-      rules =
-        [ ssh prometheus-node-exporter tailscale http https prometheus loki ];
-      vpcId = resources.vpc.vpc-orchard;
-    };
-  };
-
   route53HostedZones = {
     orchard-computer = {
       name = "orchard.computer.";
@@ -43,20 +12,6 @@ in {
   };
 
   route53RecordSets = {
-    monitor-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "monitor.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.monitor ];
-    };
-
-    grafana-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "grafana.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.monitor ];
-    };
-
     bastion-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "bastion.orchard.computer.";
@@ -69,6 +24,48 @@ in {
       domainName = "htpc.orchard.computer.";
       ttl = 15;
       recordValues = [ resources.machines.htpc.deployment.targetHost ];
+    };
+
+    arbor-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "arbor.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
+    };
+
+    plex-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "plex.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
+    };
+
+    sonarr-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "sonarr.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
+    };
+
+    radarr-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "radarr.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
+    };
+
+    nzbget-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "nzbget.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
+    };
+
+    monitor-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "monitor.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
     };
   };
 

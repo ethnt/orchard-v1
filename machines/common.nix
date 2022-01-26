@@ -12,6 +12,7 @@
   time.timeZone = "America/New_York";
 
   networking.firewall = { enable = true; };
+  networking.firewall.allowedUDPPorts = [ 51820 ];
 
   environment.systemPackages = with pkgs; [ dig htop nix-index tmux ];
 

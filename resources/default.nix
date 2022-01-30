@@ -61,6 +61,13 @@ in {
       recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
     };
 
+    tautulli-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "tautulli.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
+    };
+
     monitor-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "monitor.orchard.computer.";

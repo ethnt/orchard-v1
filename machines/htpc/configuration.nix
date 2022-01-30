@@ -19,14 +19,14 @@
     efi.canTouchEfiVariables = true;
   };
 
-  # fileSystems."/mnt/omnibus" = {
-  #   device = "192.168.1.190:/volume1/barbossa";
-  #   fsType = "nfs";
-  #   options = [
-  #     "x-systemd.automount"
-  #     "noauto"
-  #   ]; # Don't mount until it's first accessed
-  # };
+  fileSystems."/mnt/omnibus" = {
+    device = "192.168.1.190:/volume1/barbossa";
+    fsType = "nfs";
+    options = [
+      "x-systemd.automount"
+      "noauto"
+    ]; # Don't mount until it's first accessed
+  };
 
   users.groups.media = { members = [ "nzbget" "sonarr" "radarr" "plex" ]; };
 
@@ -99,6 +99,12 @@
       };
 
       nzbget = {
+        enable = true;
+        openFirewall = true;
+        group = "media";
+      };
+
+      tautulli = {
         enable = true;
         openFirewall = true;
         group = "media";

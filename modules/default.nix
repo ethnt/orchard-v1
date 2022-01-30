@@ -18,6 +18,7 @@
     ./services/remote-builder
     ./services/sonarr
     ./services/tailscale
+    ./services/tautulli
     ./services/unifi
   ];
 }

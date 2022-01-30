@@ -61,6 +61,15 @@
         } {
         }
       }
+
+      tautulli.orchard.computer {
+        encode gzip
+        log
+        reverse_proxy * ${nodes.htpc.config.networking.privateIPv4}:${
+          toString nodes.monitor.config.orchard.services.tautulli.port
+        } {
+        }
+      }
     '';
   };
 
@@ -159,6 +168,19 @@
             locations."/" = {
               proxyPass = "http://${nodes.htpc.config.networking.privateIPv4}:${
                   toString nodes.htpc.config.orchard.services.radarr.port
+                }";
+            };
+          };
+
+          "tautulli.orchard.computer" = {
+            http2 = true;
+
+            addSSL = true;
+            enableACME = true;
+
+            locations."/" = {
+              proxyPass = "http://${nodes.htpc.config.networking.privateIPv4}:${
+                  toString nodes.htpc.config.orchard.services.tautulli.port
                 }";
             };
           };

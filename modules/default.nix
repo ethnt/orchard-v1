@@ -1,6 +1,7 @@
 {
   imports = [
     ./services/adguard
+    ./services/apcupsd
     ./services/docker
     ./services/fail2ban
     ./services/grafana

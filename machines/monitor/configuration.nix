@@ -22,6 +22,16 @@
 
   orchard = {
     services = {
+      apcupsd = {
+        enable = true;
+        configText = ''
+          UPSCABLE usb
+          UPSTYPE usb
+          DEVICE
+
+        '';
+      };
+
       prometheus = {
         enable = true;
         host = "monitor.orchard.computer";
@@ -109,6 +119,17 @@
 
             ];
           }
+          {
+            job_name = "apcupsd";
+            static_configs = [{
+              targets = [
+                "${nodes.monitor.config.networking.privateIPv4}:${
+                  toString
+                  nodes.monitor.config.orchard.services.prometheus-exporter.apcupsd.port
+                }"
+              ];
+            }];
+          }
         ];
       };
 
@@ -116,6 +137,10 @@
         enable = true;
         host = "monitor";
         node = {
+          enable = true;
+          openFirewall = true;
+        };
+        apcupsd = {
           enable = true;
           openFirewall = true;
         };

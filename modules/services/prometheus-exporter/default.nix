@@ -2,7 +2,9 @@
 
 with lib;
 
-let cfg = config.orchard.services.prometheus-exporter;
+let
+  cfg = config.orchard.services.prometheus-exporter;
+  firewallFilter = e: (if e.openFirewall then e.port else null);
 in {
   options.orchard.services.prometheus-exporter = {
     enable = mkEnableOption "Enable Prometheus exporters";
@@ -26,6 +28,21 @@ in {
         };
       };
     };
+    apcupsd = mkOption {
+      type = types.submodule {
+        options = {
+          enable = mkEnableOption "Enable the APC UPS exporter";
+          port = mkOption {
+            type = types.port;
+            default = 9162;
+          };
+          openFirewall = mkOption {
+            type = types.bool;
+            default = false;
+          };
+        };
+      };
+    };
   };
 
   config = mkIf cfg.enable {
@@ -35,11 +52,17 @@ in {
         enabledCollectors = cfg.node.collectors;
         port = cfg.node.port;
       };
+      apcupsd = mkIf cfg.apcupsd.enable {
+        enable = true;
+        port = cfg.apcupsd.port;
+      };
     };
 
-    networking.firewall = mkIf cfg.node.openFirewall {
-      allowedTCPPorts = [ cfg.node.port ];
-      allowedUDPPorts = [ cfg.node.port ];
-    };
+    networking.firewall =
+      let ports = map firewallFilter [ cfg.node cfg.apcupsd ];
+      in {
+        allowedTCPPorts = ports;
+        allowedUDPPorts = ports;
+      };
   };
 }

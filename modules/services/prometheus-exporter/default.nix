@@ -52,17 +52,15 @@ in {
         enabledCollectors = cfg.node.collectors;
         port = cfg.node.port;
       };
-      apcupsd = mkIf cfg.apcupsd.enable {
-        enable = true;
-        port = cfg.apcupsd.port;
-      };
+      # apcupsd = mkIf cfg.apcupsd.enable {
+      #   enable = true;
+      #   port = cfg.apcupsd.port;
+      # };
     };
 
-    networking.firewall =
-      let ports = map firewallFilter [ cfg.node cfg.apcupsd ];
-      in {
-        allowedTCPPorts = ports;
-        allowedUDPPorts = ports;
-      };
+    networking.firewall = {
+      allowedTCPPorts = [ 9002 9162 ];
+      allowedUDPPorts = [ 9002 9162 ];
+    };
   };
 }

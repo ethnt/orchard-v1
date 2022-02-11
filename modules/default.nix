@@ -2,6 +2,7 @@
   imports = [
     ./services/adguard
     ./services/apcupsd
+    ./services/consul
     ./services/docker
     ./services/fail2ban
     ./services/grafana
@@ -20,6 +21,7 @@
     ./services/sonarr
     ./services/tailscale
     ./services/tautulli
+    ./services/traefik
     ./services/unifi
   ];
 }

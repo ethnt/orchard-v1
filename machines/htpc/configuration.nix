@@ -2,13 +2,34 @@
   deployment = { targetHost = "192.168.1.183"; };
 
   sops.secrets = {
-    # nebula_ca_cert = { sopsFile = ../secrets.yaml; };
-    # nebula_host_key = { sopsFile = ./secrets.yaml; };
-    # nebula_host_cert = { sopsFile = ./secrets.yaml; };
+    nebula_host_key = { sopsFile = ./secrets.yaml; };
+    nebula_host_cert = { sopsFile = ./secrets.yaml; };
   };
 
   networking.publicIPv4 = "192.168.1.183";
-  networking.privateIPv4 = "192.168.1.183";
+  networking.privateIPv4 = "10.10.10.2";
+
+  services.nebula.networks.orchard = {
+    enable = true;
+    isLighthouse = false;
+    lighthouses = [ "10.10.10.1" ];
+    ca = config.sops.secrets.nebula_ca_cert.path;
+    key = config.sops.secrets.nebula_host_key.path;
+    cert = config.sops.secrets.nebula_host_cert.path;
+    staticHostMap = { "10.10.10.1" = [ "192.168.1.100:4242" ]; };
+    firewall = {
+      inbound = [{
+        host = "any";
+        port = "any";
+        proto = "any";
+      }];
+      outbound = [{
+        host = "any";
+        port = "any";
+        proto = "any";
+      }];
+    };
+  };
 
   imports = [ ./hardware-configuration.nix ];
 
@@ -20,7 +41,7 @@
   };
 
   fileSystems."/mnt/omnibus" = {
-    device = "192.168.1.190:/volume1/barbossa";
+    device = "192.168.1.12:/mnt/omnibus/htpc";
     fsType = "nfs";
     options = [
       "x-systemd.automount"
@@ -45,7 +66,7 @@
 
   networking.firewall = {
     allowedTCPPorts = [ 8080 ];
-    allowedUDPPorts = [ 8080 ];
+    allowedUDPPorts = [ 8080 4242 ];
   };
 
   orchard = {
@@ -63,7 +84,7 @@
       # };
 
       prometheus-exporter = {
-        enable = true;
+        enable = false;
         host = "htpc.orchard.computer";
         node = {
           enable = true;
@@ -72,7 +93,7 @@
       };
 
       promtail = {
-        enable = true;
+        enable = false;
         host = "htpc";
         lokiServerConfiguration = {
           host = nodes.monitor.config.networking.privateIPv4;

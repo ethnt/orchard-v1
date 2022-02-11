@@ -36,7 +36,7 @@
       # };
 
       prometheus-exporter = {
-        enable = true;
+        enable = false;
         host = "unifi";
         node = {
           enable = true;
@@ -50,7 +50,7 @@
       };
 
       promtail = {
-        enable = true;
+        enable = false;
         host = "unifi";
         lokiServerConfiguration = {
           host = nodes.monitor.config.networking.privateIPv4;

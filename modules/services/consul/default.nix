@@ -28,9 +28,7 @@ in {
       enable = true;
       webUi = cfg.web.enable;
       interface.bind = "ens18";
-      extraConfig = {
-        client_addr = "0.0.0.0";
-      };
+      extraConfig = { client_addr = "0.0.0.0"; };
     };
 
     networking.firewall = mkIf cfg.web.openFirewall {

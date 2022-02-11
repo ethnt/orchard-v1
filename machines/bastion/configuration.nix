@@ -1,10 +1,15 @@
 { config, pkgs, resources, nodes, ... }: {
-  deployment = { targetHost = "100.101.26.126"; };
+  deployment = { targetHost = "192.168.1.100"; };
 
   networking.publicIPv4 = "74.65.199.203";
-  networking.privateIPv4 = "100.101.26.126";
+  networking.privateIPv4 = "10.10.10.1";
 
   imports = [ ./hardware-configuration.nix ];
+
+  sops.secrets = {
+    nebula_host_key = { sopsFile = ./secrets.yaml; };
+    nebula_host_cert = { sopsFile = ./secrets.yaml; };
+  };
 
   boot.loader = {
     systemd-boot.enable = true;
@@ -13,10 +18,42 @@
 
   services.qemuGuest.enable = true;
 
+  services.nebula.networks.orchard = {
+    enable = true;
+    isLighthouse = true;
+    ca = config.sops.secrets.nebula_ca_cert.path;
+    key = config.sops.secrets.nebula_host_key.path;
+    cert = config.sops.secrets.nebula_host_cert.path;
+    firewall = {
+      inbound = [{
+        host = "any";
+        port = "any";
+        proto = "any";
+      }];
+      outbound = [{
+        host = "any";
+        port = "any";
+        proto = "any";
+      }];
+    };
+  };
+
   services.caddy = {
     enable = true;
     email = "ethan.turkeltaub+orchard@hey.com";
     config = ''
+      arbor.orchard.computer {
+        encode gzip
+        log
+        reverse_proxy * 192.168.1.93:8006
+      }
+
+      satan.orchard.computer {
+        encode gzip
+        log
+        reverse_proxy * 192.168.1.1:81
+      }
+
       sonarr.orchard.computer {
         encode gzip
         log
@@ -70,16 +107,32 @@
         } {
         }
       }
+
+      omnibus.orchard.computer {
+        encode gzip
+        log
+        reverse_proxy http://192.168.1.12
+      }
     '';
   };
 
   networking.firewall = {
     allowedTCPPorts = [ 80 443 ];
-    allowedUDPPorts = [ 80 443 ];
+    allowedUDPPorts = [ 80 443 4242 ];
   };
 
   orchard = {
     services = {
+      docker.enable = true;
+
+      consul = {
+        enable = true;
+        web = {
+          enable = true;
+          openFirewall = true;
+        };
+      };
+
       nginx = {
         enable = false;
         acme.email = "ethan.turkeltaub+orchard@hey.com";
@@ -196,7 +249,7 @@
       # };
 
       prometheus-exporter = {
-        enable = true;
+        enable = false;
         host = "bastion";
         node = {
           enable = true;
@@ -205,7 +258,7 @@
       };
 
       promtail = {
-        enable = true;
+        enable = false;
         host = "bastion";
         lokiServerConfiguration = {
           host = nodes.monitor.config.networking.privateIPv4;

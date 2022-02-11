@@ -4,6 +4,26 @@ let
 in {
   ec2KeyPairs = { deployment-key = { inherit region; }; };
 
+  ec2SecurityGroups = let
+    mkRule = { protocol ? "tcp", port, sourceIp ? "0.0.0.0/0" }: {
+      inherit protocol sourceIp;
+      fromPort = port;
+      toPort = port;
+    };
+    ssh = mkRule { port = 22; };
+    nebula = mkRule {
+      protocol = "udp";
+      port = 4242;
+    };
+  in {
+    monitor-security-group = { resources, ... }: {
+      inherit region;
+      description = "Security group for monitor.orchard.computer";
+      rules = [ ssh nebula ];
+      vpcId = resources.vpc.vpc-orchard;
+    };
+  };
+
   route53HostedZones = {
     orchard-computer = {
       name = "orchard.computer.";
@@ -71,6 +91,13 @@ in {
     monitor-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "monitor.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.monitor ];
+    };
+
+    omnibus-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "omnibus.orchard.computer.";
       ttl = 15;
       recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
     };

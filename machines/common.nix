@@ -4,7 +4,10 @@
     defaultSopsFile = ./secrets.yaml;
 
     # These are common secrets used on every machine
-    secrets = { tailscale_auth_key = { sopsFile = ./secrets.yaml; }; };
+    secrets = {
+      tailscale_auth_key = { sopsFile = ./secrets.yaml; };
+      nebula_ca_cert = { sopsFile = ./secrets.yaml; };
+    };
   };
 
   imports = [ ../modules ../programs ];
@@ -14,7 +17,7 @@
   networking.firewall = { enable = true; };
   networking.firewall.allowedUDPPorts = [ 51820 ];
 
-  environment.systemPackages = with pkgs; [ dig htop nix-index tmux ];
+  environment.systemPackages = with pkgs; [ dig du-dust htop nix-index tmux ];
 
   orchard = {
     programs = { fish.enable = true; };

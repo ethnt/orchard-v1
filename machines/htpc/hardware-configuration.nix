@@ -27,11 +27,6 @@
   #   fsType = "autofs";
   # };
 
-  fileSystems."/mnt/shed" = {
-    device = "/dev/disk/by-uuid/cb1d516f-4162-461f-8a19-2152e651ce29";
-    fsType = "ext4";
-  };
-
   swapDevices =
     [{ device = "/dev/disk/by-uuid/932beb06-b2cb-49eb-9abf-071a7941ef42"; }];
 

@@ -5,7 +5,7 @@ keys:
   - &machine_bastion age1xmluwufsyzqz5zghdw28ll3gfkyf7veljdzhgnnxtw6y65aajdhq3syd4j
   - &machine_htpc age1a4kgrmug0ajqjzfndq2utqtkk98kavnngs65tutealffzxwzdfwq9rn47p
   - &machine_unifi age19mk8f0j4adudhrxug85akukjq99lteyf3cdw4k5rzfghja5dz5zqmrzfeh
-  - &machine_monitor age1khxqyx34kndwp9gc2n8uq7u90zjvmjskx5ah70jm6ms4snvnc5vqcld0j2
+  - &machine_monitor age1mje2pa5c7c00tpnwue5a6snfp3mjhnepg64tz93e8l3zug5dheys5vfhuk
 creation_rules:
   - path_regex: secrets.yaml$
     key_groups:

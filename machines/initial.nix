@@ -7,6 +7,8 @@
 
   environment.systemPackages = with pkgs; [ dig htop nix-index tmux ];
 
+  services.tailscale.enable = true;
+
   orchard = {
     programs = { fish.enable = true; };
 

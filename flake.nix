@@ -82,10 +82,10 @@
 
         resources = import ./resources;
 
-        builder = mkDeployment {
-          configuration = ./machines/builder/configuration.nix;
-          system = "x86_64-linux";
-        };
+        # builder = mkDeployment {
+        #   configuration = ./machines/builder/configuration.nix;
+        #   system = "x86_64-linux";
+        # };
 
         bastion = mkDeployment {
           configuration = ./machines/bastion/configuration.nix;

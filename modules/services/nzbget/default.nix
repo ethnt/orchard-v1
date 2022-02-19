@@ -22,6 +22,10 @@ in {
       type = types.str;
       default = "nzbget";
     };
+    dataDir = mkOption {
+      type = types.str;
+      default = "/var/lib/nzbget";
+    };
   };
 
   config = mkIf cfg.enable {

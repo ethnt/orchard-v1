@@ -1,0 +1,26 @@
+{
+  imports = [
+    ./adguard
+    ./apcupsd
+    ./consul
+    ./docker
+    ./fail2ban
+    ./grafana
+    ./loki
+    ./nebula
+    ./nginx
+    ./nzbget
+    ./openssh
+    ./plex
+    ./prometheus
+    ./prometheus-exporter
+    ./promtail
+    ./pve-exporter
+    ./radarr
+    ./remote-builder
+    ./sonarr
+    ./tailscale
+    ./tautulli
+    ./unifi
+  ];
+}

@@ -26,6 +26,7 @@ in {
       inherit (cfg) enable port;
 
       scrapeConfigs = cfg.scrapers;
+      extraFlags = [ "--log.level=debug" ];
     };
 
     networking.firewall = mkIf cfg.openFirewall {

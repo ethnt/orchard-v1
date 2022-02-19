@@ -1,4 +1,4 @@
-{ config, pkgs, resources, nodes, ... }:
+{ config, lib, pkgs, resources, nodes, ... }:
 let aws = import ../../config/aws.nix;
 in {
   deployment = {
@@ -6,240 +6,40 @@ in {
     ec2 = {
       inherit (aws) region;
 
-      instanceType = "t3.small";
+      instanceType = "t3.medium";
       keyPair = resources.ec2KeyPairs.deployment-key;
-      associatePublicIpAddress = true;
-      subnetId = resources.vpcSubnets.public-subnet;
-      securityGroupIds =
-        [ resources.ec2SecurityGroups.monitor-security-group.name ];
+      securityGroups = [ resources.ec2SecurityGroups.monitor-security-group ];
       ebsBoot = true;
       ebsInitialRootDiskSize = 128;
     };
   };
 
-  sops.secrets = {
-    grafana_environment_file = { sopsFile = ./secrets.yaml; };
-    nebula_host_key = { sopsFile = ./secrets.yaml; };
-    nebula_host_cert = { sopsFile = ./secrets.yaml; };
-  };
-
-  orchard.services = { traefik.enable = true; };
-
-  networking.firewall.allowedUDPPorts = [ 4242 ];
-
-  services.nebula.networks.orchard = {
-    enable = true;
-    isLighthouse = false;
-    lighthouses = [ "10.10.10.1" ];
-    ca = config.sops.secrets.nebula_ca_cert.path;
-    key = config.sops.secrets.nebula_host_key.path;
-    cert = config.sops.secrets.nebula_host_cert.path;
-    staticHostMap = {
-      "10.10.10.1" = [ "${nodes.bastion.config.networking.publicIPv4}:4242" ];
-    };
-    firewall = {
-      inbound = [{
-        host = "any";
-        port = "any";
-        proto = "any";
-      }];
-      outbound = [{
-        host = "any";
-        port = "any";
-        proto = "any";
-      }];
+  sops = {
+    secrets = {
+      nebula_host_key = { sopsFile = ./secrets.yaml; };
+      nebula_host_cert = { sopsFile = ./secrets.yaml; };
     };
   };
 
-  # orchard = {
-  #   services = {
-  #     # apcupsd = {
-  #     #   enable = true;
-  #     #   configText = ''
-  #     #     UPSCABLE usb
-  #     #     UPSTYPE usb
-  #     #     DEVICE
-
-  #     #   '';
-  #     # };
-
-  #     prometheus = {
-  #       enable = false;
-  #       host = "monitor.orchard.computer";
-  #       openFirewall = true;
-
-  #       scrapers = [
-  #         {
-  #           job_name = "monitor";
-  #           static_configs = [{
-  #             targets = [
-  #               "${nodes.monitor.config.networking.privateIPv4}:${
-  #                 toString
-  #                 nodes.monitor.config.orchard.services.prometheus-exporter.node.port
-  #               }"
-  #             ];
-  #           }];
-  #         }
-  #         {
-  #           job_name = "bastion";
-  #           static_configs = [{
-  #             targets = [
-  #               "${nodes.bastion.config.networking.privateIPv4}:${
-  #                 toString
-  #                 nodes.bastion.config.orchard.services.prometheus-exporter.node.port
-  #               }"
-  #             ];
-  #           }];
-  #         }
-  #         {
-  #           job_name = "unifi";
-  #           static_configs = [{
-  #             targets = [
-  #               "${nodes.unifi.config.networking.privateIPv4}:${
-  #                 toString
-  #                 nodes.unifi.config.orchard.services.prometheus-exporter.node.port
-  #               }"
-  #             ];
-  #           }];
-  #         }
-  #         {
-  #           job_name = "htpc";
-  #           static_configs = [{
-  #             targets = [
-  #               "${nodes.htpc.config.networking.privateIPv4}:${
-  #                 toString
-  #                 nodes.htpc.config.orchard.services.prometheus-exporter.node.port
-  #               }"
-  #             ];
-  #           }];
-  #         }
-  #         {
-  #           job_name = "pfsense";
-  #           static_configs = [{ targets = [ "192.168.1.1:9002" ]; }];
-  #         }
-  #         {
-  #           job_name = "arbor";
-  #           static_configs = [{ targets = [ "192.168.1.93:9100" ]; }];
-  #         }
-  #         {
-  #           job_name = "garden";
-  #           static_configs = [{ targets = [ "192.168.1.159:9100" ]; }];
-  #         }
-  #         {
-  #           job_name = "pve";
-  #           metrics_path = "/pve";
-  #           static_configs =
-  #             [{ targets = [ "192.168.1.93" "192.168.1.159" ]; }];
-  #           params = { module = [ "default" ]; };
-  #           relabel_configs = [
-  #             {
-  #               source_labels = [ "__address" ];
-  #               target_label = "__param_target";
-  #             }
-  #             {
-  #               source_labels = [ "__param_target" ];
-  #               target_label = "instance";
-  #             }
-  #             {
-  #               target_label = "__address__";
-  #               replacement = "${nodes.monitor.config.networking.privateIPv4}:${
-  #                   toString
-  #                   nodes.monitor.config.orchard.services.pve-exporter.port
-  #                 }";
-  #             }
-
-  #           ];
-  #         }
-  #         {
-  #           job_name = "apcupsd";
-  #           static_configs = [{
-  #             targets = [
-  #               "${nodes.monitor.config.networking.privateIPv4}:${
-  #                 toString
-  #                 nodes.monitor.config.orchard.services.prometheus-exporter.apcupsd.port
-  #               }"
-  #             ];
-  #           }];
-  #         }
-  #       ];
-  #     };
-
-  #     prometheus-exporter = {
-  #       enable = false;
-  #       host = "monitor";
-  #       node = {
-  #         enable = true;
-  #         openFirewall = true;
-  #       };
-  #       apcupsd = {
-  #         enable = true;
-  #         openFirewall = true;
-  #       };
-  #     };
-
-  #     docker.enable = true;
-
-  #     pve-exporter = {
-  #       enable = false;
-  #       configFile = config.sops.secrets.pve_exporter_config_file.path;
-  #       openFirewall = true;
-  #     };
-
-  #     loki = {
-  #       enable = false;
-  #       host = "monitor.orchard.computer";
-  #       openFirewall = true;
-  #     };
-
-  #     promtail = {
-  #       enable = false;
-  #       host = "monitor";
-  #       lokiServerConfiguration = {
-  #         host = nodes.monitor.config.networking.privateIPv4;
-  #         port = nodes.monitor.config.orchard.services.loki.port;
-  #       };
-  #     };
-
-  #     grafana = {
-  #       enable = false;
-  #       domain = "grafana.orchard.computer";
-  #       addr = "0.0.0.0";
-
-  #       openFirewall = true;
-
-  #       environmentFile = config.sops.secrets.grafana_environment_file.path;
-
-  #       provisioning = {
-  #         sources = [
-  #           {
-  #             name = "Prometheus";
-  #             type = "prometheus";
-  #             access = "proxy";
-  #             url = "http://${nodes.monitor.config.networking.privateIPv4}:${
-  #                 toString config.orchard.services.prometheus.port
-  #               }";
-  #           }
-  #           {
-  #             name = "Loki";
-  #             type = "loki";
-  #             access = "proxy";
-  #             url = "http://${nodes.monitor.config.networking.privateIPv4}:${
-  #                 toString config.orchard.services.loki.port
-  #               }";
-  #           }
-  #         ];
-
-  #         notifiers = [{
-  #           uid = "pushover";
-  #           type = "pushover";
-  #           name = "Pushover";
-  #           settings = {
-  #             apiToken = "$GF_PUSHOVER_API_TOKEN";
-  #             userKey = "$GF_PUSHOVER_USER_KEY";
-  #           };
-  #         }];
-  #       };
-  #     };
-  #   };
-  # };
+  orchard = {
+    services = {
+      nebula = {
+        enable = true;
+        network = {
+          lighthouses = [ "10.10.10.1" ];
+          staticHostMap = {
+            "10.10.10.1" =
+              [ "${nodes.gateway.config.networking.publicIPv4}:4242" ];
+            "10.10.10.2" =
+              [ "${nodes.gateway.config.networking.publicIPv4}:4343" ];
+          };
+        };
+        host = {
+          addr = "10.10.10.4";
+          keyPath = config.sops.secrets.nebula_host_key.path;
+          certPath = config.sops.secrets.nebula_host_cert.path;
+        };
+      };
+    };
+  };
 }

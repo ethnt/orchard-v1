@@ -1,134 +1,88 @@
 { config, pkgs, resources, nodes, ... }: {
-  deployment = { targetHost = "192.168.1.183"; };
+  deployment = { targetHost = "192.168.1.44"; };
 
-  sops.secrets = {
-    nebula_host_key = { sopsFile = ./secrets.yaml; };
-    nebula_host_cert = { sopsFile = ./secrets.yaml; };
-  };
+  imports = [ ../qemu.nix ./hardware-configuration.nix ];
 
-  networking.publicIPv4 = "192.168.1.183";
-  networking.privateIPv4 = "10.10.10.2";
-
-  services.nebula.networks.orchard = {
-    enable = true;
-    isLighthouse = false;
-    lighthouses = [ "10.10.10.1" ];
-    ca = config.sops.secrets.nebula_ca_cert.path;
-    key = config.sops.secrets.nebula_host_key.path;
-    cert = config.sops.secrets.nebula_host_cert.path;
-    staticHostMap = { "10.10.10.1" = [ "192.168.1.100:4242" ]; };
-    firewall = {
-      inbound = [{
-        host = "any";
-        port = "any";
-        proto = "any";
-      }];
-      outbound = [{
-        host = "any";
-        port = "any";
-        proto = "any";
-      }];
+  sops = {
+    secrets = {
+      nebula_host_key = { sopsFile = ./secrets.yaml; };
+      nebula_host_cert = { sopsFile = ./secrets.yaml; };
     };
   };
 
-  imports = [ ./hardware-configuration.nix ];
+  boot.initrd.kernelModules = [ "i915" ];
 
-  services.qemuGuest.enable = true;
+  hardware.opengl.extraPackages = with pkgs; [
+    vaapiIntel
+    vaapiVdpau
+    libvdpau-va-gl
+    intel-media-driver
+  ];
 
-  boot.loader = {
-    systemd-boot.enable = true;
-    efi.canTouchEfiVariables = true;
-  };
-
+  # TODO: Make other systemd services (sonarr, etc) require mount to finish first
   fileSystems."/mnt/omnibus" = {
     device = "192.168.1.12:/mnt/omnibus/htpc";
     fsType = "nfs";
     options = [
-      "x-systemd.automount"
       "noauto"
-    ]; # Don't mount until it's first accessed
+      "x-systemd.automount"
+      "x-systemd.requires=network-online.target"
+      "x-systemd.device-timeout=10"
+    ];
   };
 
-  users.groups.media = { members = [ "nzbget" "sonarr" "radarr" "plex" ]; };
+  users.groups.htpc = {
+    gid = 1042;
+    members = [ "nzbget" "sonarr" "radarr" "plex" ];
+  };
 
-  # users.users.media = {
-  #   isSystemUser = true;
-  #   isNormalUser = false;
-  #   createHome = false;
-  #   group = config.users.groups.media.name;
-  #   extraGroups = [ "wheel" ];
-  # };
-
-  # services.qemuGuest = {
-  #   enable = true;
-  #   package = pkgs.unstable.qemu_kvm.ga;
-  # };
-
-  networking.firewall = {
-    allowedTCPPorts = [ 8080 ];
-    allowedUDPPorts = [ 8080 4242 ];
+  users.users.htpc = {
+    uid = 1042;
+    isSystemUser = true;
+    isNormalUser = false;
+    group = config.users.groups.htpc.name;
   };
 
   orchard = {
     services = {
-      # nebula = {
-      #   enable = true;
-      #   caCert = config.sops.secrets.nebula_ca_cert.path;
-      #   hostKey = config.sops.secrets.nebula_host_key.path;
-      #   hostCert = config.sops.secrets.nebula_host_cert.path;
-      #   staticHostMap = {
-      #     "10.11.12.1" =
-      #       [ "${nodes.bastion.config.networking.publicIPv4}:4242" ];
-      #   };
-      #   lighthouses = [ "10.11.12.1" ];
-      # };
-
-      prometheus-exporter = {
-        enable = false;
-        host = "htpc.orchard.computer";
-        node = {
-          enable = true;
-          openFirewall = true;
+      nebula = {
+        enable = true;
+        network = {
+          lighthouses = [ "10.10.10.1" ];
+          staticHostMap = {
+            "10.10.10.1" =
+              [ "${nodes.gateway.config.deployment.targetHost}:4242" ];
+          };
         };
-      };
-
-      promtail = {
-        enable = false;
-        host = "htpc";
-        lokiServerConfiguration = {
-          host = nodes.monitor.config.networking.privateIPv4;
-          port = nodes.monitor.config.orchard.services.loki.port;
+        host = {
+          addr = "10.10.10.2";
+          keyPath = config.sops.secrets.nebula_host_key.path;
+          certPath = config.sops.secrets.nebula_host_cert.path;
         };
       };
 
       sonarr = {
         enable = true;
         openFirewall = true;
-        group = "media";
+        group = "htpc";
       };
 
       radarr = {
         enable = true;
         openFirewall = true;
-        group = "media";
+        group = "htpc";
       };
 
       plex = {
         enable = true;
         openFirewall = true;
-        group = "media";
+        group = "htpc";
       };
 
       nzbget = {
         enable = true;
         openFirewall = true;
-        group = "media";
-      };
-
-      tautulli = {
-        enable = true;
-        openFirewall = true;
-        group = "media";
+        group = "htpc";
       };
     };
   };

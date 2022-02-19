@@ -26,9 +26,13 @@ in {
       type = types.str;
       default = "radarr";
     };
+    dataDir = mkOption {
+      type = types.str;
+      default = "/var/lib/radarr/.config/NzbDrone";
+    };
   };
 
   config = mkIf cfg.enable {
-    services.radarr = { inherit (cfg) enable openFirewall user group; };
+    services.radarr = { inherit (cfg) enable openFirewall user group dataDir; };
   };
 }

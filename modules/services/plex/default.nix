@@ -22,9 +22,13 @@ in {
       type = types.str;
       default = "plex";
     };
+    dataDir = mkOption {
+      type = types.str;
+      default = "/var/lib/plex";
+    };
   };
 
   config = mkIf cfg.enable {
-    services.plex = { inherit (cfg) enable user group openFirewall; };
+    services.plex = { inherit (cfg) enable user group openFirewall dataDir; };
   };
 }

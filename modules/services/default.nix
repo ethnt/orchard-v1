@@ -22,5 +22,6 @@
     ./tailscale
     ./tautulli
     ./unifi
+    ./tinc
   ];
 }

@@ -15,11 +15,15 @@ in {
       protocol = "udp";
       port = 4242;
     };
+    tinc = mkRule {
+      protocol = "udp";
+      port = 655;
+    };
   in {
     monitor-security-group = { resources, ... }: {
       inherit region;
       description = "Security group for monitor.orchard.computer";
-      rules = [ ssh nebula ];
+      rules = [ ssh nebula tinc ];
     };
   };
 

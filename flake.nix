@@ -6,6 +6,7 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
     nixops.url = "github:input-output-hk/nixops-flake";
+    nixops.inputs.nixpgs.follows = "nixpkgs";
 
     sops-nix.url = "github:Mic92/sops-nix";
 

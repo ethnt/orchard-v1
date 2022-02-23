@@ -60,48 +60,48 @@
             ./machines/common.nix;
         in [ common configuration ];
       };
-    in flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
-      let pkgs = nixpkgs-unstable.legacyPackages.${system};
-      in {
-        nixopsConfigurations.default = {
-          inherit nixpkgs;
+    in {
+      nixopsConfigurations.default = {
+        inherit nixpkgs;
 
-          network = {
-            description = "orchard";
-            enableRollback = true;
-          };
-
-          defaults = { ... }: {
-            imports = [{
-              imports = [ sops-nix.nixosModules.sops ];
-              nix.nixPath = [ "nixpkgs=${nixpkgs}" ];
-              nixpkgs.pkgs = nixpkgsFor."x86_64-linux";
-            }];
-          };
-
-          resources = import ./resources;
-
-          gateway = mkDeployment {
-            configuration = ./machines/gateway/configuration.nix;
-            system = "x86_64-linux";
-          };
-
-          htpc = mkDeployment {
-            configuration = ./machines/htpc/configuration.nix;
-            system = "x86_64-linux";
-          };
-
-          monitor = mkDeployment {
-            configuration = ./machines/monitor/configuration.nix;
-            system = "x86_64-linux";
-          };
-
-          errata = mkDeployment {
-            configuration = ./machines/errata/configuration.nix;
-            system = "x86_64-linux";
-          };
+        network = {
+          description = "orchard";
+          enableRollback = true;
         };
 
+        defaults = { ... }: {
+          imports = [{
+            imports = [ sops-nix.nixosModules.sops ];
+            nix.nixPath = [ "nixpkgs=${nixpkgs}" ];
+            nixpkgs.pkgs = nixpkgsFor."x86_64-linux";
+          }];
+        };
+
+        resources = import ./resources;
+
+        gateway = mkDeployment {
+          configuration = ./machines/gateway/configuration.nix;
+          system = "x86_64-linux";
+        };
+
+        htpc = mkDeployment {
+          configuration = ./machines/htpc/configuration.nix;
+          system = "x86_64-linux";
+        };
+
+        monitor = mkDeployment {
+          configuration = ./machines/monitor/configuration.nix;
+          system = "x86_64-linux";
+        };
+
+        errata = mkDeployment {
+          configuration = ./machines/errata/configuration.nix;
+          system = "x86_64-linux";
+        };
+      };
+    } // flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
+      let pkgs = nixpkgs-unstable.legacyPackages.${system};
+      in {
         checks = {
           nixfmt = runCodeAnalysis system "nixfmt" ''
             ${pkgs.nixfmt}/bin/nixfmt --check \
@@ -112,7 +112,7 @@
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs;
             [ age git nixfmt ssh-to-age sops ] ++ [
-              nixops.defaultPackage.${system}
+              nixops.packages.${system}.nixops_2_0-latest-unstable
               sops-nix.defaultPackage.${system}
             ];
 

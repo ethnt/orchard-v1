@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-21.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-    nixops.url = "github:ethnt/nixops-flake";
+    nixops.url = "github:input-output-hk/nixops-flake";
 
     sops-nix.url = "github:Mic92/sops-nix";
 
@@ -60,48 +60,48 @@
             ./machines/common.nix;
         in [ common configuration ];
       };
-    in {
-      nixopsConfigurations.default = {
-        inherit nixpkgs;
-
-        network = {
-          description = "orchard";
-          enableRollback = true;
-        };
-
-        defaults = { ... }: {
-          imports = [{
-            imports = [ sops-nix.nixosModules.sops ];
-            nix.nixPath = [ "nixpkgs=${nixpkgs}" ];
-            nixpkgs.pkgs = nixpkgsFor."x86_64-linux";
-          }];
-        };
-
-        resources = import ./resources;
-
-        gateway = mkDeployment {
-          configuration = ./machines/gateway/configuration.nix;
-          system = "x86_64-linux";
-        };
-
-        htpc = mkDeployment {
-          configuration = ./machines/htpc/configuration.nix;
-          system = "x86_64-linux";
-        };
-
-        monitor = mkDeployment {
-          configuration = ./machines/monitor/configuration.nix;
-          system = "x86_64-linux";
-        };
-
-        errata = mkDeployment {
-          configuration = ./machines/errata/configuration.nix;
-          system = "x86_64-linux";
-        };
-      };
-    } // flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
+    in flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
       let pkgs = nixpkgs-unstable.legacyPackages.${system};
       in {
+        nixopsConfigurations.default = {
+          inherit nixpkgs;
+
+          network = {
+            description = "orchard";
+            enableRollback = true;
+          };
+
+          defaults = { ... }: {
+            imports = [{
+              imports = [ sops-nix.nixosModules.sops ];
+              nix.nixPath = [ "nixpkgs=${nixpkgs}" ];
+              nixpkgs.pkgs = nixpkgsFor."x86_64-linux";
+            }];
+          };
+
+          resources = import ./resources;
+
+          gateway = mkDeployment {
+            configuration = ./machines/gateway/configuration.nix;
+            system = "x86_64-linux";
+          };
+
+          htpc = mkDeployment {
+            configuration = ./machines/htpc/configuration.nix;
+            system = "x86_64-linux";
+          };
+
+          monitor = mkDeployment {
+            configuration = ./machines/monitor/configuration.nix;
+            system = "x86_64-linux";
+          };
+
+          errata = mkDeployment {
+            configuration = ./machines/errata/configuration.nix;
+            system = "x86_64-linux";
+          };
+        };
+
         checks = {
           nixfmt = runCodeAnalysis system "nixfmt" ''
             ${pkgs.nixfmt}/bin/nixfmt --check \

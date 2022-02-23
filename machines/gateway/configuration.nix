@@ -1,7 +1,7 @@
 { config, pkgs, resources, nodes, ... }: {
   deployment = { targetHost = "192.168.1.43"; };
 
-  imports = [ ../qemu.nix ./hardware-configuration.nix ];
+  imports = [ ../../profiles/virtualized ./hardware-configuration.nix ];
 
   sops = {
     secrets = {
@@ -12,6 +12,7 @@
 
   # TODO: Make this not manual
   networking.publicIPv4 = "74.65.199.203";
+  networking.privateIPv4 = "192.168.1.43";
 
   orchard = {
     services = {
@@ -41,6 +42,27 @@
         enable = true;
         acme = { email = "admin@orchard.computer"; };
         virtualHosts = {
+          "gateway.orchard.computer" = {
+            locations."/stub_status" = {
+              extraConfig = ''
+                stub_status;
+              '';
+            };
+          };
+
+          "metrics.satan.orchard.computer" = {
+            locations."/" = { proxyPass = "http://192.168.1.1:9002"; };
+          };
+
+          # "pve.orchard.computer" = {
+          #   http2 = true;
+
+          #   addSSL = true;
+          #   enableACME = true;
+
+          #   locations."/" = { proxyPass = "http://192.168.1.42:8006"; };
+          # };
+
           "sonarr.orchard.computer" = {
             http2 = true;
 
@@ -52,6 +74,7 @@
                 "http://${nodes.htpc.config.orchard.services.nebula.host.addr}:${
                   toString nodes.htpc.config.orchard.services.sonarr.port
                 }";
+              proxyWebsockets = true;
             };
           };
 
@@ -66,6 +89,7 @@
                 "http://${nodes.htpc.config.orchard.services.nebula.host.addr}:${
                   toString nodes.htpc.config.orchard.services.radarr.port
                 }";
+              proxyWebsockets = true;
             };
           };
 
@@ -80,6 +104,71 @@
                 "http://${nodes.htpc.config.orchard.services.nebula.host.addr}:${
                   toString nodes.htpc.config.orchard.services.nzbget.port
                 }";
+              proxyWebsockets = true;
+            };
+          };
+
+          "prowlarr.orchard.computer" = {
+            http2 = true;
+
+            addSSL = true;
+            enableACME = true;
+
+            locations."/" = {
+              proxyPass =
+                "http://${nodes.htpc.config.orchard.services.nebula.host.addr}:${
+                  toString nodes.htpc.config.orchard.services.prowlarr.port
+                }";
+              proxyWebsockets = true;
+            };
+          };
+
+          "overseerr.orchard.computer" = {
+            http2 = true;
+
+            addSSL = true;
+            enableACME = true;
+
+            locations."/" = {
+              proxyPass =
+                "http://${nodes.htpc.config.orchard.services.nebula.host.addr}:${
+                  toString nodes.htpc.config.orchard.services.overseerr.port
+                }";
+              proxyWebsockets = true;
+            };
+          };
+
+          "tautulli.orchard.computer" = {
+            http2 = true;
+
+            addSSL = true;
+            enableACME = true;
+
+            locations."/" = {
+              proxyPass =
+                "http://${nodes.htpc.config.orchard.services.nebula.host.addr}:${
+                  toString nodes.htpc.config.orchard.services.tautulli.port
+                }";
+              proxyWebsockets = true;
+            };
+          };
+
+          "sabnzbd.orchard.computer" = {
+            http2 = true;
+
+            addSSL = true;
+            enableACME = true;
+
+            extraConfig = ''
+              client_max_body_size 100M;
+            '';
+
+            locations."/" = {
+              proxyPass =
+                "http://${nodes.htpc.config.orchard.services.nebula.host.addr}:${
+                  toString nodes.htpc.config.orchard.services.sabnzbd.port
+                }";
+              proxyWebsockets = true;
             };
           };
 
@@ -133,9 +222,31 @@
                 "http://${nodes.htpc.config.orchard.services.nebula.host.addr}:${
                   toString nodes.htpc.config.orchard.services.plex.port
                 }";
+              proxyWebsockets = true;
             };
           };
         };
+      };
+
+      promtail = {
+        enable = true;
+        host = "gateway";
+        lokiServerConfiguration = {
+          host = nodes.monitor.config.orchard.services.loki.host;
+          port = nodes.monitor.config.orchard.services.loki.port;
+        };
+      };
+
+      prometheus-node-exporter = {
+        enable = true;
+        host = "gateway.orchard.computer";
+        openFirewall = true;
+      };
+
+      prometheus-nginx-exporter = {
+        enable = true;
+        scrapeUri = "http://gateway.orchard.computer/stub_status";
+        openFirewall = true;
       };
     };
   };

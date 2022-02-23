@@ -11,16 +11,23 @@
     ./nginx
     ./nzbget
     ./openssh
+    ./overseerr
     ./plex
     ./prometheus
-    ./prometheus-exporter
+    ./prometheus-apcupsd-exporter
+    ./prometheus-node-exporter
+    ./prometheus-nginx-exporter
+    ./prometheus-snmp-exporter
     ./promtail
+    ./prowlarr
     ./pve-exporter
     ./radarr
     ./remote-builder
+    ./sabnzbd
     ./sonarr
     ./tailscale
     ./tautulli
     ./unifi
+    ./zerotier
   ];
 }

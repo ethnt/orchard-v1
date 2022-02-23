@@ -1,8 +1,9 @@
 keys:
   - &user_ethnt age1xgvn6f36rkzmq2kfqx0g2xg90qrpar4hpu6fr8xc3s2kqw6dzqcssnslsv
-  - &machine_htpc age1f5n5qx48ax7hgwvuykcqyf8ef8swj9kfrsvwjqzmayvrprkxr4tqgge3w0
-  - &machine_gateway age1pvqwmnu6j5x2ynfe92vhukm2536wus2kf4s0pcchfwnl58ytf4jqyknvhl
-  - &machine_monitor age1j47lhuv2l306c4e7rc943p6sz0jeyq2zs04cx409s9wdf9cdzvjsky97xx
+  - &machine_htpc age1zljvw50qm5mmg5ntstw85aj2pnkswquzmn7c72vudsq4gtepde4qu5s0vd
+  - &machine_gateway age148ehmkp9ppddzkpxduv8mc0anr2sdvpjl39hfzza9kaq429kaf9q2vm4af
+  - &machine_monitor age1dald4x0rn9pn8fq045twgew3yg7p4lf7w4wyjaftf27t5qkfw39s2pcv59
+  - &machine_errata age1jusjemzl3lr7w9wqck7yfdxvlwjlujchm9vwkfgg9cxpdkngesnqecwq5u
 creation_rules:
   - path_regex: secrets.yaml$
     key_groups:
@@ -11,6 +12,7 @@ creation_rules:
           - *machine_htpc
           - *machine_gateway
           - *machine_monitor
+          - *machine_errata
 
   - path_regex: machines/secrets.yaml$
     key_groups:
@@ -19,3 +21,4 @@ creation_rules:
           - *machine_htpc
           - *machine_gateway
           - *machine_monitor
+          - *machine_errata

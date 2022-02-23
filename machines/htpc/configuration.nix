@@ -1,7 +1,7 @@
 { config, pkgs, resources, nodes, ... }: {
   deployment = { targetHost = "192.168.1.44"; };
 
-  imports = [ ../qemu.nix ./hardware-configuration.nix ];
+  imports = [ ../../profiles/virtualized ./hardware-configuration.nix ];
 
   sops = {
     secrets = {
@@ -9,6 +9,8 @@
       nebula_host_cert = { sopsFile = ./secrets.yaml; };
     };
   };
+
+  networking.privateIPv4 = "192.168.1.44";
 
   boot.initrd.kernelModules = [ "i915" ];
 
@@ -18,6 +20,8 @@
     libvdpau-va-gl
     intel-media-driver
   ];
+
+  environment.systemPackages = with pkgs; [ handbrake ];
 
   # TODO: Make other systemd services (sonarr, etc) require mount to finish first
   fileSystems."/mnt/omnibus" = {
@@ -33,7 +37,7 @@
 
   users.groups.htpc = {
     gid = 1042;
-    members = [ "nzbget" "sonarr" "radarr" "plex" ];
+    members = [ "nzbget" "sonarr" "radarr" "plex" "sabnzbd" ];
   };
 
   users.users.htpc = {
@@ -61,6 +65,8 @@
         };
       };
 
+      docker.enable = true;
+
       sonarr = {
         enable = true;
         openFirewall = true;
@@ -83,6 +89,42 @@
         enable = true;
         openFirewall = true;
         group = "htpc";
+      };
+
+      prowlarr = {
+        enable = true;
+        openFirewall = true;
+      };
+
+      overseerr = {
+        enable = true;
+        openFirewall = true;
+      };
+
+      tautulli = {
+        enable = true;
+        openFirewall = true;
+      };
+
+      sabnzbd = {
+        enable = true;
+        openFirewall = true;
+        group = "htpc";
+      };
+
+      promtail = {
+        enable = true;
+        host = "htpc";
+        lokiServerConfiguration = {
+          host = nodes.monitor.config.orchard.services.loki.host;
+          port = nodes.monitor.config.orchard.services.loki.port;
+        };
+      };
+
+      prometheus-node-exporter = {
+        enable = true;
+        host = "monitor.orchard.computer";
+        openFirewall = true;
       };
     };
   };

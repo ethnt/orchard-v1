@@ -35,6 +35,11 @@
       };
 
       openssh.enable = true;
+
+      zerotier = {
+        enable = true;
+        networkId = "9bee8941b5fb2362";
+      };
     };
   };
 }

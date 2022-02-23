@@ -6,7 +6,6 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
     nixops.url = "github:input-output-hk/nixops-flake";
-    nixops.inputs.nixpgs.follows = "nixpkgs";
 
     sops-nix.url = "github:Mic92/sops-nix";
 
@@ -113,7 +112,7 @@
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs;
             [ age git nixfmt ssh-to-age sops ] ++ [
-              nixops.defaultPackage.${system}
+              # nixops.defaultPackage.${system}
               sops-nix.defaultPackage.${system}
             ];
 

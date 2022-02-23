@@ -3,7 +3,7 @@
 let
   inherit (lib) genAttrs;
 
-  systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" ];
+  systems = with inputs.flake-utils.lib.system; [ x86_64-linux x86_64-darwin ];
 
   forAllSystems = f: genAttrs systems (sys: f sys);
 

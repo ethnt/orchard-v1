@@ -2,13 +2,13 @@
 
 with lib;
 
-let cfg = config.orchard.services.nzbget;
+let cfg = config.orchard.services.sabnzbd;
 in {
-  options.orchard.services.nzbget = {
-    enable = mkEnableOption "Enable NZBget";
+  options.orchard.services.sabnzbd = {
+    enable = mkEnableOption "Enable SABnzbd";
     port = mkOption {
       type = types.port;
-      default = 6789;
+      default = 8080;
     };
     openFirewall = mkOption {
       type = types.bool;
@@ -16,20 +16,16 @@ in {
     };
     user = mkOption {
       type = types.str;
-      default = "nzbget";
+      default = "sabnzbd";
     };
     group = mkOption {
       type = types.str;
-      default = "nzbget";
-    };
-    dataDir = mkOption {
-      type = types.str;
-      default = "/var/lib/nzbget";
+      default = "sabnzbd";
     };
   };
 
   config = mkIf cfg.enable {
-    services.nzbget = { inherit (cfg) enable user group; };
+    services.sabnzbd = { inherit (cfg) enable user group; };
 
     networking.firewall = mkIf cfg.openFirewall {
       allowedTCPPorts = [ cfg.port ];

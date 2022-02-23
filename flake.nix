@@ -5,18 +5,15 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-21.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-    nixops-plugged.url = "github:ethnt/nixops-plugged";
+    nixops.url = "github:input-output-hk/nixops-flake";
 
     sops-nix.url = "github:Mic92/sops-nix";
 
     flake-utils.url = "github:numtide/flake-utils";
-
-    flakebox.url = "github:esselius/nix-flakebox";
-    flakebox.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixops-plugged, sops-nix
-    , flake-utils, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixops, sops-nix, flake-utils
+    , ... }@inputs:
     let
       utils = import ./lib/utils.nix {
         inherit (nixpkgs) lib;
@@ -52,7 +49,7 @@
         imports = let
           common = if initialDeploy then
             ({ config, lib, pkgs, ... }: {
-              imports = [ ./modules ./programs ];
+              imports = [ ./modules ];
 
               orchard = {
                 programs = { fish.enable = true; };
@@ -82,13 +79,8 @@
 
         resources = import ./resources;
 
-        # builder = mkDeployment {
-        #   configuration = ./machines/builder/configuration.nix;
-        #   system = "x86_64-linux";
-        # };
-
-        bastion = mkDeployment {
-          configuration = ./machines/bastion/configuration.nix;
+        gateway = mkDeployment {
+          configuration = ./machines/gateway/configuration.nix;
           system = "x86_64-linux";
         };
 
@@ -97,20 +89,15 @@
           system = "x86_64-linux";
         };
 
-        unifi = mkDeployment {
-          configuration = ./machines/unifi/configuration.nix;
-          system = "x86_64-linux";
-        };
-
         monitor = mkDeployment {
           configuration = ./machines/monitor/configuration.nix;
           system = "x86_64-linux";
         };
 
-        # vm = mkDeployment {
-        #   configuration = ./machines/vm/configuration.nix;
-        #   system = "x86_64-linux";
-        # };
+        errata = mkDeployment {
+          configuration = ./machines/errata/configuration.nix;
+          system = "x86_64-linux";
+        };
       };
     } // flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
       let pkgs = nixpkgs-unstable.legacyPackages.${system};
@@ -125,7 +112,7 @@
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs;
             [ age git nixfmt ssh-to-age sops ] ++ [
-              nixops-plugged.defaultPackage.${system}
+              nixops.defaultPackage.${system}
               sops-nix.defaultPackage.${system}
             ];
 

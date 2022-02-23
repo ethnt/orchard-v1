@@ -15,14 +15,28 @@ in {
       protocol = "udp";
       port = 4242;
     };
+    loki = mkRule { port = 3100; };
+    http = mkRule { port = 80; };
+    https = mkRule { port = 443; };
+    prometheus-node-exporter = mkRule { port = 9002; };
+    prometheus-nginx-exporter = mkRule { port = 9113; };
   in {
     monitor-security-group = { resources, ... }: {
       inherit region;
       description = "Security group for monitor.orchard.computer";
-      rules = [ ssh nebula ];
-      vpcId = resources.vpc.vpc-orchard;
+      rules = [
+        ssh
+        nebula
+        loki
+        http
+        https
+        prometheus-node-exporter
+        prometheus-nginx-exporter
+      ];
     };
   };
+
+  elasticIPs = { monitor-elastic-ip = { inherit region; }; };
 
   route53HostedZones = {
     orchard-computer = {
@@ -32,62 +46,6 @@ in {
   };
 
   route53RecordSets = {
-    bastion-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "bastion.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.bastion.deployment.targetHost ];
-    };
-
-    htpc-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "htpc.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.htpc.deployment.targetHost ];
-    };
-
-    arbor-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "arbor.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
-    };
-
-    plex-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "plex.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
-    };
-
-    sonarr-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "sonarr.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
-    };
-
-    radarr-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "radarr.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
-    };
-
-    nzbget-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "nzbget.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
-    };
-
-    tautulli-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "tautulli.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
-    };
-
     monitor-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "monitor.orchard.computer.";
@@ -95,77 +53,88 @@ in {
       recordValues = [ resources.machines.monitor ];
     };
 
-    omnibus-record-set = { resources, ... }: {
+    grafana-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "omnibus.orchard.computer.";
+      domainName = "grafana.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.bastion.networking.publicIPv4 ];
+      recordValues = [ resources.machines.monitor ];
     };
-  };
 
-  vpc = {
-    vpc-orchard = {
-      inherit region;
-      instanceTenancy = "default";
-      enableDnsSupport = true;
-      enableDnsHostnames = true;
-      cidrBlock = "10.0.0.0/16";
+    gateway-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "gateway.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
     };
-  };
 
-  vpcSubnets = {
-    public-subnet = { resources, ... }: {
-      inherit region;
-      zone = "${awsConfig.region}a";
-      vpcId = resources.vpc.vpc-orchard;
-      cidrBlock = "10.0.0.0/24";
-      mapPublicIpOnLaunch = true;
+    sonarr-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "sonarr.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
     };
-  };
 
-  vpcRouteTables = {
-    public-route-table = { resources, ... }: {
-      inherit region;
-      vpcId = resources.vpc.vpc-orchard;
+    radarr-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "radarr.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
     };
-  };
 
-  vpcRouteTableAssociations = {
-    public-route-table-public-subnet-association = { resources, ... }: {
-      inherit region;
-      subnetId = resources.vpcSubnets.public-subnet;
-      routeTableId = resources.vpcRouteTables.public-route-table;
+    nzbget-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "nzbget.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
     };
-  };
 
-  vpcRoutes = {
-    internet-gateway-vpc-route = { resources, ... }: {
-      inherit region;
-      routeTableId = resources.vpcRouteTables.public-route-table;
-      destinationCidrBlock = "0.0.0.0/0";
-      gatewayId = resources.vpcInternetGateways.internet-gateway;
+    prowlarr-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "prowlarr.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
     };
-  };
 
-  vpcInternetGateways = {
-    internet-gateway = { resources, ... }: {
-      inherit region;
-      vpcId = resources.vpc.vpc-orchard;
+    overseerr-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "overseerr.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
     };
-  };
 
-  elasticIPs = {
-    nat-elastic-ip = {
-      inherit region;
-      vpc = true;
+    tautulli-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "tautulli.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
     };
-  };
 
-  vpcNatGateways = {
-    nat-gateway = { resources, ... }: {
-      inherit region;
-      allocationId = resources.elasticIPs.nat-elastic-ip;
-      subnetId = resources.vpcSubnets.public-subnet;
+    sabnzbd-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "sabnzbd.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+    };
+
+    metrics-satan-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "metrics.satan.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+    };
+
+    pve-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "pve.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+    };
+
+    plex-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "plex.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
     };
   };
 }

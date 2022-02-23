@@ -1,30 +1,24 @@
 keys:
   - &user_ethnt age1xgvn6f36rkzmq2kfqx0g2xg90qrpar4hpu6fr8xc3s2kqw6dzqcssnslsv
-  - &machine_vm age1xvpf073tnghe8frmatsdxxvgtrjx5q0ynv52spwkt6qfxcgejptsw9pr88
-  - &machine_builder age1muld980xfnfcsvd50me2zw7awadttjln7l0pxpkd544njfm0te0sk26l3p
-  - &machine_bastion age1xmluwufsyzqz5zghdw28ll3gfkyf7veljdzhgnnxtw6y65aajdhq3syd4j
-  - &machine_htpc age1a4kgrmug0ajqjzfndq2utqtkk98kavnngs65tutealffzxwzdfwq9rn47p
-  - &machine_unifi age19mk8f0j4adudhrxug85akukjq99lteyf3cdw4k5rzfghja5dz5zqmrzfeh
-  - &machine_monitor age1mje2pa5c7c00tpnwue5a6snfp3mjhnepg64tz93e8l3zug5dheys5vfhuk
+  - &machine_htpc age1zljvw50qm5mmg5ntstw85aj2pnkswquzmn7c72vudsq4gtepde4qu5s0vd
+  - &machine_gateway age148ehmkp9ppddzkpxduv8mc0anr2sdvpjl39hfzza9kaq429kaf9q2vm4af
+  - &machine_monitor age1dald4x0rn9pn8fq045twgew3yg7p4lf7w4wyjaftf27t5qkfw39s2pcv59
+  - &machine_errata age1jusjemzl3lr7w9wqck7yfdxvlwjlujchm9vwkfgg9cxpdkngesnqecwq5u
 creation_rules:
   - path_regex: secrets.yaml$
     key_groups:
       - age:
           - *user_ethnt
-          - *machine_vm
-          - *machine_builder
-          - *machine_bastion
           - *machine_htpc
-          - *machine_unifi
+          - *machine_gateway
           - *machine_monitor
+          - *machine_errata
 
   - path_regex: machines/secrets.yaml$
     key_groups:
       - age:
           - *user_ethnt
-          - *machine_vm
-          - *machine_builder
-          - *machine_bastion
           - *machine_htpc
-          - *machine_unifi
+          - *machine_gateway
           - *machine_monitor
+          - *machine_errata

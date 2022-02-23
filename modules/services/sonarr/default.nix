@@ -26,9 +26,13 @@ in {
       type = types.str;
       default = "sonarr";
     };
+    dataDir = mkOption {
+      type = types.str;
+      default = "/var/lib/sonarr/.config/NzbDrone";
+    };
   };
 
   config = mkIf cfg.enable {
-    services.sonarr = { inherit (cfg) enable openFirewall user group; };
+    services.sonarr = { inherit (cfg) enable openFirewall user group dataDir; };
   };
 }

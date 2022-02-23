@@ -112,7 +112,7 @@
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs;
             [ age git nixfmt ssh-to-age sops ] ++ [
-              # nixops.defaultPackage.${system}
+              nixops.defaultPackage.${system}
               sops-nix.defaultPackage.${system}
             ];
 

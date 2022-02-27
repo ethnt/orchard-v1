@@ -47,6 +47,28 @@
     group = config.users.groups.htpc.name;
   };
 
+  # for wireguard
+  networking = {
+    firewall = {
+      allowedTCPPorts = [ 56311 ];
+      allowedUDPPorts = [ 56311 ];
+    };
+
+    useNetworkd = true;
+    # When using systemd-networkd useDHCP must be set to false
+    useDHCP = false;
+    bridges = { br0 = { interfaces = [ "ens18" ]; }; };
+    interfaces = {
+      br0 = {
+        useDHCP = true;
+        ipv4.addresses = [{
+          address = "192.168.1.44";
+          prefixLength = 24;
+        }];
+      };
+    };
+  };
+
   orchard = {
     services = {
       nebula = {

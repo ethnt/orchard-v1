@@ -1,10 +1,10 @@
 {
   imports = [
-    ./adguard
     ./apcupsd
-    ./consul
+    ./deluge
     ./docker
     ./fail2ban
+    ./flood
     ./grafana
     ./loki
     ./nebula
@@ -23,6 +23,8 @@
     ./pve-exporter
     ./radarr
     ./remote-builder
+    ./rtorrent
+    ./qbittorrent
     ./sabnzbd
     ./sonarr
     ./tailscale

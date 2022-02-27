@@ -182,6 +182,18 @@ in {
             }];
           }
           {
+            job_name = "matrix";
+            static_configs = [{
+              targets = [
+                "${nodes.matrix.config.orchard.services.nebula.host.addr}:${
+                  toString
+                  nodes.matrix.config.orchard.services.prometheus-node-exporter.port
+                }"
+              ];
+            }];
+          }
+
+          {
             job_name = "pfsense";
             static_configs =
               [{ targets = [ "metrics.satan.orchard.computer" ]; }];
@@ -204,6 +216,17 @@ in {
                 "${nodes.monitor.config.orchard.services.nebula.host.addr}:${
                   toString
                   nodes.monitor.config.orchard.services.prometheus-nginx-exporter.port
+                }"
+              ];
+            }];
+          }
+          {
+            job_name = "matrix_nginx";
+            static_configs = [{
+              targets = [
+                "${nodes.matrix.config.orchard.services.nebula.host.addr}:${
+                  toString
+                  nodes.matrix.config.orchard.services.prometheus-nginx-exporter.port
                 }"
               ];
             }];

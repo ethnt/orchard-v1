@@ -12,7 +12,7 @@ in {
       default = [ ];
     };
 
-    buildUserKeyFile = mkOption { type = types.path; };
+    buildUserPublicKeyFile = mkOption { type = types.path; };
   };
 
   config = mkIf cfg.enable {
@@ -26,7 +26,7 @@ in {
       isSystemUser = false;
       extraGroups = [ "wheel" ];
       group = "users";
-      openssh.authorizedKeys.keyFiles = [ cfg.buildUserKeyFile ];
+      openssh.authorizedKeys.keyFiles = [ cfg.buildUserPublicKeyFile ];
     };
   };
 }

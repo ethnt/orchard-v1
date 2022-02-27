@@ -1,8 +1,6 @@
 {
   imports = [
-    ./adguard
     ./apcupsd
-    ./consul
     ./docker
     ./fail2ban
     ./grafana

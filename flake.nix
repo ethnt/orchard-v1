@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-21.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-    nixops.url = "github:input-output-hk/nixops-flake";
+    nixops.url = "github:ethnt/nixops-plugged/update-poetry2nix";
 
     sops-nix.url = "github:Mic92/sops-nix";
 
@@ -68,6 +68,7 @@
         network = {
           description = "orchard";
           enableRollback = true;
+          storage.legacy.databasefile = "./state.nixops";
         };
 
         defaults = { ... }: {

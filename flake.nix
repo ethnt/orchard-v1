@@ -94,6 +94,11 @@
           system = "x86_64-linux";
         };
 
+        matrix = mkDeployment {
+          configuration = ./machines/matrix/configuration.nix;
+          system = "x86_64-linux";
+        };
+
         errata = mkDeployment {
           configuration = ./machines/errata/configuration.nix;
           system = "x86_64-linux";

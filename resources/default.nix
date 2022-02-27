@@ -34,18 +34,57 @@ in {
         prometheus-nginx-exporter
       ];
     };
+
+    matrix-security-group = { resources, ... }: {
+      inherit region;
+      description = "Security group for matrix.orchard.computer";
+      rules = [
+        ssh
+        nebula
+        http
+        https
+        prometheus-node-exporter
+        prometheus-nginx-exporter
+      ];
+    };
   };
 
-  elasticIPs = { monitor-elastic-ip = { inherit region; }; };
+  # elasticFileSystems = { matrix-elastic-storage = { inherit region; }; };
+
+  # elasticFileSystemMountTargets = {
+  #   matrix-elastic-storage-mount = { resources, ... }: {
+  #     inherit region subnet;
+  #     fileSystem = resources.elasticFileSystems.matrix-elastic-storage;
+  #     securityGroups = [ "default" ];
+  #   };
+  # };
+
+  elasticIPs = {
+    monitor-elastic-ip = { inherit region; };
+
+    matrix-elastic-ip = { inherit region; };
+  };
 
   route53HostedZones = {
     orchard-computer = {
       name = "orchard.computer.";
       comment = "Hosted zone for orchard.computer";
     };
+
+    e10-land = {
+      name = "e10.land";
+      comment = "Hosted zone for e10.land";
+    };
   };
 
   route53RecordSets = {
+    e10-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.e10-land;
+      domainName = "e10.land.";
+      ttl = 15;
+      recordValues = [ resources.machines.matrix ];
+    };
+
     monitor-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "monitor.orchard.computer.";
@@ -65,6 +104,20 @@ in {
       domainName = "gateway.orchard.computer.";
       ttl = 15;
       recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+    };
+
+    matrix-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "matrix.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.matrix ];
+    };
+
+    builder-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "builder.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.matrix ];
     };
 
     sonarr-record-set = { resources, ... }: {

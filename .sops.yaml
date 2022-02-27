@@ -4,6 +4,7 @@ keys:
   - &machine_gateway age148ehmkp9ppddzkpxduv8mc0anr2sdvpjl39hfzza9kaq429kaf9q2vm4af
   - &machine_monitor age1dald4x0rn9pn8fq045twgew3yg7p4lf7w4wyjaftf27t5qkfw39s2pcv59
   - &machine_errata age1jusjemzl3lr7w9wqck7yfdxvlwjlujchm9vwkfgg9cxpdkngesnqecwq5u
+  - &machine_matrix age15xjkwphlrg3wrp9g6km8endtsts3pd264njg8jq8ks876rr5t5vsyzn9zd
 creation_rules:
   - path_regex: secrets.yaml$
     key_groups:
@@ -13,6 +14,7 @@ creation_rules:
           - *machine_gateway
           - *machine_monitor
           - *machine_errata
+          - *machine_matrix
 
   - path_regex: machines/secrets.yaml$
     key_groups:
@@ -22,3 +24,4 @@ creation_rules:
           - *machine_gateway
           - *machine_monitor
           - *machine_errata
+          - *machine_matrix

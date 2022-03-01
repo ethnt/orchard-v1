@@ -3,6 +3,7 @@
     ./apcupsd
     ./docker
     ./fail2ban
+    ./filebrowser
     ./grafana
     ./loki
     ./nebula
@@ -13,8 +14,8 @@
     ./plex
     ./prometheus
     ./prometheus-apcupsd-exporter
-    ./prometheus-node-exporter
     ./prometheus-nginx-exporter
+    ./prometheus-node-exporter
     ./prometheus-snmp-exporter
     ./promtail
     ./prowlarr

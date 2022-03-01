@@ -44,6 +44,8 @@ in {
         };
       };
 
+      docker.enable = true;
+
       remote-builder = {
         enable = true;
         emulatedSystems = [ "aarch64-linux" ];
@@ -71,6 +73,11 @@ in {
         openFirewall = true;
       };
 
+      filebrowser = {
+        enable = true;
+        srvDir = "/var/www/e10.land";
+      };
+
       nginx = {
         enable = true;
         acme.email = "admin@orchard.computer";
@@ -85,7 +92,7 @@ in {
           };
 
           "e10.land" = {
-            addSSL = true;
+            forceSSL = true;
             enableACME = true;
 
             locations."/" = {
@@ -94,6 +101,22 @@ in {
                 autoindex on;
                 fancyindex on;
               '';
+            };
+          };
+
+          "filebrowser.e10.land" = {
+            http2 = true;
+
+            forceSSL = true;
+            enableACME = true;
+
+            extraConfig = ''
+              client_max_body_size 100M;
+            '';
+
+            locations."/" = {
+              proxyPass = "http://localhost:8010";
+              proxyWebsockets = true;
             };
           };
         };

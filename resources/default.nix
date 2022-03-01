@@ -113,6 +113,13 @@ in {
       recordValues = [ resources.machines.matrix ];
     };
 
+    filebrowser-e10-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.e10-land;
+      domainName = "filebrowser.e10.land.";
+      ttl = 15;
+      recordValues = [ resources.machines.matrix ];
+    };
+
     builder-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "builder.orchard.computer.";

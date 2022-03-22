@@ -71,6 +71,17 @@
         openFirewall = true;
         configurationFile = ./prometheus/snmp/snmp.yml;
       };
+
+      restic = {
+        enable = true;
+        backupName = "errata";
+        paths = [ "/var/lib" ];
+        passwordFile = config.sops.secrets.backup_password.path;
+        s3 = {
+          bucketName = resources.s3Buckets.errata-backups-bucket.name;
+          credentialsFile = config.sops.secrets.aws_credentials.path;
+        };
+      };
     };
   };
 }

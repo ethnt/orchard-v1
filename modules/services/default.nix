@@ -22,6 +22,7 @@
     ./pve-exporter
     ./radarr
     ./remote-builder
+    ./restic
     ./sabnzbd
     ./sonarr
     ./tailscale

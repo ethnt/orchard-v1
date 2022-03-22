@@ -248,6 +248,17 @@
         scrapeUri = "http://gateway.orchard.computer/stub_status";
         openFirewall = true;
       };
+
+      restic = {
+        enable = true;
+        backupName = "gateway";
+        paths = [ "/var/lib" ];
+        passwordFile = config.sops.secrets.backup_password.path;
+        s3 = {
+          bucketName = resources.s3Buckets.gateway-backups-bucket.name;
+          credentialsFile = config.sops.secrets.aws_credentials.path;
+        };
+      };
     };
   };
 }

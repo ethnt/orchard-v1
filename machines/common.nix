@@ -3,7 +3,11 @@
     # Set the secrets file location
     defaultSopsFile = ./secrets.yaml;
 
-    secrets = { nebula_ca_cert = { }; };
+    secrets = {
+      nebula_ca_cert = { };
+      aws_credentials = { };
+      backup_password = { };
+    };
   };
 
   imports = [ ../modules ];

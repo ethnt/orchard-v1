@@ -126,6 +126,17 @@
         host = "monitor.orchard.computer";
         openFirewall = true;
       };
+
+      restic = {
+        enable = true;
+        backupName = "htpc";
+        paths = [ "/var/lib" ];
+        passwordFile = config.sops.secrets.backup_password.path;
+        s3 = {
+          bucketName = resources.s3Buckets.htpc-backups-bucket.name;
+          credentialsFile = config.sops.secrets.aws_credentials.path;
+        };
+      };
     };
   };
 }

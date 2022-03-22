@@ -197,4 +197,63 @@ in {
       recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
     };
   };
+
+  s3Buckets = let
+    glacierLifeCycleConfig = ''
+      {
+        "Rules": [
+           {
+             "Status": "Enabled",
+             "Prefix": "",
+             "Transitions": [
+               {
+                 "Days": 30,
+                 "StorageClass": "GLACIER"
+               }
+             ],
+             "ID": "Glacier",
+             "AbortIncompleteMultipartUpload":
+               {
+                 "DaysAfterInitiation": 7
+               }
+           }
+        ]
+      }
+    '';
+  in {
+    errata-backups-bucket = {
+      inherit region;
+      name = "orchard-errata-backups";
+      versioning = "Suspended";
+      lifeCycle = glacierLifeCycleConfig;
+    };
+
+    htpc-backups-bucket = {
+      inherit region;
+      name = "orchard-htpc-backups";
+      versioning = "Suspended";
+      lifeCycle = glacierLifeCycleConfig;
+    };
+
+    gateway-backups-bucket = {
+      inherit region;
+      name = "orchard-gateway-backups";
+      versioning = "Suspended";
+      lifeCycle = glacierLifeCycleConfig;
+    };
+
+    matrix-backups-bucket = {
+      inherit region;
+      name = "orchard-matrix-backups";
+      versioning = "Suspended";
+      lifeCycle = glacierLifeCycleConfig;
+    };
+
+    monitor-backups-bucket = {
+      inherit region;
+      name = "orchard-monitor-backups";
+      versioning = "Suspended";
+      lifeCycle = glacierLifeCycleConfig;
+    };
+  };
 }

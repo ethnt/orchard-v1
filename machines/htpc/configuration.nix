@@ -137,11 +137,6 @@
           credentialsFile = config.sops.secrets.aws_credentials.path;
         };
       };
-
-      tdarr = {
-        enable = false;
-        mediaDir = "/mnt/omnibus/media";
-      };
     };
   };
 }

@@ -27,6 +27,7 @@
     ./sonarr
     ./tailscale
     ./tautulli
+    ./tdarr
     ./unifi
     ./zerotier
   ];

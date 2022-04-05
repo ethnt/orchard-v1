@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-21.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs-master.url = "github:nixos/nixpkgs";
 
     nixops.url = "github:ethnt/nixops-plugged/update-poetry2nix";
 
@@ -13,8 +14,8 @@
     flake-utils.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixops, sops-nix, flake-utils
-    , ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-master, nixops, sops-nix
+    , flake-utils, ... }@inputs:
     let
       utils = import ./lib/utils.nix {
         inherit (nixpkgs) lib;
@@ -26,6 +27,11 @@
       nixpkgsFor = let
         overlay-unstable = final: prev: {
           unstable = import inputs.nixpkgs-unstable {
+            inherit (final) system;
+            config.allowUnfree = true;
+          };
+
+          master = import nixpkgs-master {
             inherit (final) system;
             config.allowUnfree = true;
           };

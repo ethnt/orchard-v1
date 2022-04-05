@@ -29,6 +29,10 @@ in {
   };
 
   config = mkIf cfg.enable {
-    services.plex = { inherit (cfg) enable user group openFirewall dataDir; };
+    services.plex = {
+      inherit (cfg) enable user group openFirewall dataDir;
+
+      package = pkgs.master.plex;
+    };
   };
 }

@@ -196,6 +196,13 @@ in {
       ttl = 15;
       recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
     };
+
+    feeds-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "feeds.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.matrix ];
+    };
   };
 
   s3Buckets = let

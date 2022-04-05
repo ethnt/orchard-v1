@@ -6,6 +6,7 @@
     ./filebrowser
     ./grafana
     ./loki
+    ./miniflux
     ./nebula
     ./nginx
     ./nzbget

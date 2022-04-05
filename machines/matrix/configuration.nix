@@ -19,6 +19,7 @@ in {
     secrets = {
       nebula_host_key = { sopsFile = ./secrets.yaml; };
       nebula_host_cert = { sopsFile = ./secrets.yaml; };
+      miniflux_credentials = { sopsFile = ./secrets.yaml; };
     };
   };
 
@@ -119,6 +120,18 @@ in {
               proxyWebsockets = true;
             };
           };
+
+          "feeds.orchard.computer" = {
+            http2 = true;
+
+            forceSSL = true;
+            enableACME = true;
+
+            locations."/" = {
+              proxyPass = "http://localhost:8080";
+              proxyWebsockets = true;
+            };
+          };
         };
       };
 
@@ -131,6 +144,11 @@ in {
           bucketName = resources.s3Buckets.matrix-backups-bucket.name;
           credentialsFile = config.sops.secrets.aws_credentials.path;
         };
+      };
+
+      miniflux = {
+        enable = true;
+        credentialsFile = config.sops.secrets.miniflux_credentials.path;
       };
     };
   };

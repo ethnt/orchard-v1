@@ -19,7 +19,6 @@
 
   networking.privateIPv4 = "192.168.1.44";
 
-
   environment.systemPackages = with pkgs; [ handbrake ];
 
   # TODO: Make other systemd services (sonarr, etc) require mount to finish first

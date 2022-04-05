@@ -10,16 +10,14 @@
     };
   };
 
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  hardware.opengl = {
+    enable = true;
+    extraPackages = with pkgs; [ intel-media-driver ];
+  };
+
   networking.privateIPv4 = "192.168.1.44";
-
-  boot.initrd.kernelModules = [ "i915" ];
-
-  hardware.opengl.extraPackages = with pkgs; [
-    vaapiIntel
-    vaapiVdpau
-    libvdpau-va-gl
-    intel-media-driver
-  ];
 
   environment.systemPackages = with pkgs; [ handbrake ];
 

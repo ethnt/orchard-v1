@@ -172,6 +172,24 @@
             };
           };
 
+          "jellyfin.orchard.computer" = {
+            http2 = true;
+
+            forceSSL = true;
+            enableACME = true;
+
+            locations."/" = {
+              proxyPass =
+                "http://${nodes.htpc.config.orchard.services.nebula.host.addr}:${
+                  toString nodes.htpc.config.orchard.services.jellyfin.port
+                }";
+              proxyWebsockets = true;
+              extraConfig = ''
+                proxy_buffering off;
+              '';
+            };
+          };
+
           "plex.orchard.computer" = {
             http2 = true;
 

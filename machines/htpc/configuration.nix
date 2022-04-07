@@ -135,6 +135,11 @@
           credentialsFile = config.sops.secrets.aws_credentials.path;
         };
       };
+
+      jellyfin = {
+        enable = true;
+        openFirewall = true;
+      };
     };
   };
 }

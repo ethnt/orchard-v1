@@ -116,7 +116,10 @@ in {
             '';
 
             locations."/" = {
-              proxyPass = "http://localhost:8010";
+              proxyPass =
+                "http://${nodes.matrix.config.orchard.services.nebula.host.addr}:${
+                  toString nodes.htpc.config.orchard.services.filebrowser.port
+                }";
               proxyWebsockets = true;
             };
           };
@@ -128,7 +131,10 @@ in {
             enableACME = true;
 
             locations."/" = {
-              proxyPass = "http://localhost:8080";
+              proxyPass =
+                "http://${nodes.matrix.config.orchard.services.nebula.host.addr}:${
+                  toString nodes.htpc.config.orchard.services.miniflux.port
+                }";
               proxyWebsockets = true;
             };
           };

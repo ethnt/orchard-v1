@@ -116,15 +116,19 @@
       let pkgs = nixpkgs-unstable.legacyPackages.${system};
       in {
         checks = {
-          nixfmt = runCodeAnalysis system "nixfmt" ''
+          format = runCodeAnalysis system "format" ''
             ${pkgs.nixfmt}/bin/nixfmt --check \
               $(find . -type f -name '*.nix')
+          '';
+
+          lint = runCodeAnalysis system "lint" ''
+            ${pkgs.statix}/bin/statix check
           '';
         };
 
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs;
-            [ age git nixfmt ssh-to-age sops ] ++ [
+            [ age git nixfmt ssh-to-age sops statix ] ++ [
               nixops.defaultPackage.${system}
               sops-nix.defaultPackage.${system}
             ];

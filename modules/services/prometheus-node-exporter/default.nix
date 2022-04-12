@@ -23,9 +23,8 @@ in {
 
   config = mkIf cfg.enable {
     services.prometheus.exporters.node = mkIf cfg.enable {
-      enable = true;
+      inherit (cfg) enable port;
       enabledCollectors = cfg.collectors;
-      port = cfg.port;
     };
 
     networking.firewall =

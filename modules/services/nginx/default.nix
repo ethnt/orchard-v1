@@ -35,8 +35,8 @@ in {
     };
 
     security.acme = {
+      inherit (cfg.acme) email;
       acceptTerms = true;
-      email = cfg.acme.email;
     };
 
     networking.firewall = {

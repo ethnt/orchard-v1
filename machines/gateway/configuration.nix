@@ -250,8 +250,7 @@
         enable = true;
         host = "gateway";
         lokiServerConfiguration = {
-          host = nodes.monitor.config.orchard.services.loki.host;
-          port = nodes.monitor.config.orchard.services.loki.port;
+          inherit (nodes.monitor.config.orchard.services.loki) port host;
         };
       };
 

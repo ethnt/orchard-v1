@@ -59,10 +59,9 @@ in {
       package = pkgs.unstable.grafana;
 
       provision = {
+        inherit (cfg.provisioning) sources dashboards notifiers;
+
         enable = true;
-        datasources = cfg.provisioning.sources;
-        dashboards = cfg.provisioning.dashboards;
-        notifiers = cfg.provisioning.notifiers;
       };
     };
 

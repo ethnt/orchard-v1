@@ -21,11 +21,11 @@ in {
 
   config = mkIf cfg.enable {
     services.restic.backups.${cfg.backupName} = {
+      inherit (cfg) passwordFile paths;
+
       initialize = true;
       repository = "s3:s3.amazonaws.com/${cfg.s3.bucketName}";
-      paths = cfg.paths;
       timerConfig = { OnCalendar = "daily"; };
-      passwordFile = cfg.passwordFile;
       environmentFile = cfg.s3.credentialsFile;
     };
   };

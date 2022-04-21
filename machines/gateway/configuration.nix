@@ -11,7 +11,7 @@
   };
 
   # TODO: Make this not manual
-  networking.publicIPv4 = "74.65.199.203";
+  networking.publicIPv4 = "67.244.78.4";
   networking.privateIPv4 = "192.168.1.43";
 
   orchard = {

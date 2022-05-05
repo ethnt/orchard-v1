@@ -19,6 +19,7 @@
     ./prometheus-nginx-exporter
     ./prometheus-node-exporter
     ./prometheus-snmp-exporter
+    ./prometheus-smokeping-exporter
     ./promtail
     ./prowlarr
     ./pve-exporter

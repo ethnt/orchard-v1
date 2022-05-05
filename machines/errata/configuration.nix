@@ -72,6 +72,12 @@
         configurationFile = ./prometheus/snmp/snmp.yml;
       };
 
+      prometheus-smokeping-exporter = {
+        enable = true;
+        openFirewall = true;
+        hosts = [ "1.1.1.1" "8.8.8.8" "192.168.1.1" "127.0.0.1" ];
+      };
+
       restic = {
         enable = true;
         backupName = "errata";

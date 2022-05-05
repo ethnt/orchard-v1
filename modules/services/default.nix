@@ -28,6 +28,7 @@
     ./restic
     ./sabnzbd
     ./sonarr
+    ./smokeping
     ./tailscale
     ./tautulli
     ./tdarr

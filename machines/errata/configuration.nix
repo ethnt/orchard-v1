@@ -88,6 +88,139 @@
           credentialsFile = config.sops.secrets.aws_credentials.path;
         };
       };
+
+      smokeping = {
+        enable = true;
+        openFirewall = true;
+        externalHost = config.networking.privateIPv4;
+        targetConfig = ''
+          + Local
+          menu = Local
+          title = Local Network
+
+          ++ Localhost
+          menu = Localhost
+          title = Localhost
+          host = localhost
+
+          ++ Router
+          menu = Router
+          title = Router
+          host = 192.168.1.1
+
+          + Internet
+          menu = Internet
+          title = Internet
+
+          ++ Google
+          menu = Google
+          title = google.com
+          host = google.com
+
+          + DNS
+          menu = DNS
+          title = DNS
+
+          ++ GoogleDNS
+          menu = Google DNS
+          title = Google DNS
+          host = 8.8.8.8
+
+          ++ CloudflareDNS
+          menu = Cloudflare DNS
+          title = Cloudflare DNS
+          host = 1.1.1.1
+
+          + Global
+          menu = Global
+          title = Global Connectivity
+
+          ++ Germany
+
+          menu = Germany
+          title = Germany
+
+          +++ TelefonicaDE
+
+          menu = Telefonica DE
+          title = Telefonica DE
+          host = www.telefonica.de
+
+          ++ Switzerland
+
+          menu = Switzerland
+          title = Switzerland
+
+          +++ CernIXP
+
+          menu = CernIXP
+          title = Cern Internet eXchange Point
+          host = cixp.web.cern.ch
+
+          +++ SBB
+
+          menu = SBB
+          title = SBB
+          host = www.sbb.ch/en
+
+          ++ UK
+          menu = United Kingdom
+          title = United Kingdom
+
+          +++ CambridgeUni
+          menu = Cambridge
+          title = Cambridge
+          host = cam.ac.uk
+
+          +++ UCL
+          menu = UCL
+          title = UCL
+          host = www.ucl.ac.uk
+
+          ++ USA
+          menu = United States
+          title = United States
+
+          +++ MIT
+          menu = MIT
+          title = Massachusetts Institute of Technology Webserver
+          host = web.mit.edu
+
+          +++ IU
+          menu = IU
+          title = Indiana University
+          host = www.indiana.edu
+
+          +++ UCB
+          menu = U. C. Berkeley
+          title = U. C. Berkeley
+          host = www.berkeley.edu
+
+          +++ UCSD
+          menu = U. C. San Diego
+          title = U. C. San Diego
+          host = ucsd.edu
+
+          +++ UMN
+          menu =  University of Minnesota
+          title = University of Minnesota
+          host = twin-cities.umn.edu
+
+          +++ OSUOSL
+          menu = Oregon State University Open Source Lab
+          title = Oregon State University Open Source Lab
+          host = osuosl.org
+
+          ++ Japan
+          menu = Japan
+          title = Japan
+
+          +++ NTT
+          menu = NTT
+          title = NTT
+          host = group.ntt/en
+        '';
+      };
     };
   };
 }

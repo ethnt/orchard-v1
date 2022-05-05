@@ -282,30 +282,6 @@ in {
               ];
             }];
           }
-          # {
-          #   job_name = "blackbox";
-          #   metrics_path = "/probe";
-          #   params = { module = [ "icmp" ]; };
-          #   static_configs = [{ targets = [ "https://stripe.com" ]; }];
-          #   relabel_configs = [
-          #     {
-          #       source_labels = [ "__address__" ];
-          #       target_label = "__param_target";
-          #     }
-          #     {
-          #       source_labels = [ "__param_target" ];
-          #       target_label = "instance";
-          #     }
-          #     {
-          #       target_label = "__address__";
-          #       replacement =
-          #         "${nodes.errata.config.orchard.services.nebula.host.addr}:${
-          #           toString
-          #           nodes.errata.config.orchard.services.prometheus-blackbox-exporter.port
-          #         }";
-          #     }
-          #   ];
-          # }
         ];
       };
 

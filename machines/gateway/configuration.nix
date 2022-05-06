@@ -194,18 +194,15 @@
             http2 = true;
             forceSSL = true;
             enableACME = true;
-            locations."/" = {
-              proxyPass =
+            locations = let
+              proxyPassBase =
                 "http://${nodes.errata.config.orchard.services.nebula.host.addr}:${
                   toString nodes.errata.config.orchard.services.smokeping.port
-                }/smokeping.fcgi";
-            };
-
-            locations."/cache" = {
-              proxyPass =
-                "http://${nodes.errata.config.orchard.services.nebula.host.addr}:${
-                  toString nodes.errata.config.orchard.services.smokeping.port
-                }/cache";
+                }";
+            in {
+              "/" = { proxyPass = "${proxyPassBase}/smokeping.fcgi"; };
+              "/cache" = { proxyPass = "${proxyPassBase}/cache"; };
+              "/cropper" = { proxyPass = "${proxyPassBase}/cropper"; };
             };
           };
 

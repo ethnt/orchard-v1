@@ -73,7 +73,7 @@
       };
 
       prometheus-smokeping-exporter = {
-        enable = true;
+        enable = false;
         openFirewall = true;
         hosts = [ "1.1.1.1" "8.8.8.8" "192.168.1.1" "127.0.0.1" ];
       };
@@ -157,12 +157,6 @@
           title = Cern Internet eXchange Point
           host = cixp.web.cern.ch
 
-          +++ SBB
-
-          menu = SBB
-          title = SBB
-          host = www.sbb.ch/en
-
           ++ UK
           menu = United Kingdom
           title = United Kingdom
@@ -186,11 +180,6 @@
           title = Massachusetts Institute of Technology Webserver
           host = web.mit.edu
 
-          +++ IU
-          menu = IU
-          title = Indiana University
-          host = www.indiana.edu
-
           +++ UCB
           menu = U. C. Berkeley
           title = U. C. Berkeley
@@ -210,15 +199,6 @@
           menu = Oregon State University Open Source Lab
           title = Oregon State University Open Source Lab
           host = osuosl.org
-
-          ++ Japan
-          menu = Japan
-          title = Japan
-
-          +++ NTT
-          menu = NTT
-          title = NTT
-          host = group.ntt/en
         '';
       };
     };

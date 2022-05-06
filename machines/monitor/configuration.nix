@@ -271,17 +271,17 @@ in {
               }
             ];
           }
-          {
-            job_name = "smokeping";
-            static_configs = [{
-              targets = [
-                "${nodes.errata.config.orchard.services.nebula.host.addr}:${
-                  toString
-                  nodes.errata.config.orchard.services.prometheus-smokeping-exporter.port
-                }"
-              ];
-            }];
-          }
+          # {
+          #   job_name = "smokeping";
+          #   static_configs = [{
+          #     targets = [
+          #       "${nodes.errata.config.orchard.services.nebula.host.addr}:${
+          #         toString
+          #         nodes.errata.config.orchard.services.prometheus-smokeping-exporter.port
+          #       }"
+          #     ];
+          #   }];
+          # }
         ];
       };
 

@@ -113,6 +113,10 @@ in {
               name = "APC UPS";
               options.path = ./grafana/dashboards/apcupsd.json;
             }
+            {
+              name = "Smokeping";
+              options.path = ./grafana/dashboards/smokeping.json;
+            }
           ];
         };
       };
@@ -192,7 +196,6 @@ in {
               ];
             }];
           }
-
           {
             job_name = "pfsense";
             static_configs =
@@ -268,6 +271,17 @@ in {
               }
             ];
           }
+          # {
+          #   job_name = "smokeping";
+          #   static_configs = [{
+          #     targets = [
+          #       "${nodes.errata.config.orchard.services.nebula.host.addr}:${
+          #         toString
+          #         nodes.errata.config.orchard.services.prometheus-smokeping-exporter.port
+          #       }"
+          #     ];
+          #   }];
+          # }
         ];
       };
 

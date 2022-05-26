@@ -19,6 +19,7 @@
     ./prometheus-nginx-exporter
     ./prometheus-node-exporter
     ./prometheus-snmp-exporter
+    ./prometheus-smokeping-exporter
     ./promtail
     ./prowlarr
     ./pve-exporter
@@ -27,6 +28,7 @@
     ./restic
     ./sabnzbd
     ./sonarr
+    ./smokeping
     ./tailscale
     ./tautulli
     ./tdarr

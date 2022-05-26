@@ -190,6 +190,22 @@
             };
           };
 
+          "smokeping.orchard.computer" = {
+            http2 = true;
+            forceSSL = true;
+            enableACME = true;
+            locations = let
+              proxyPassBase =
+                "http://${nodes.errata.config.orchard.services.nebula.host.addr}:${
+                  toString nodes.errata.config.orchard.services.smokeping.port
+                }";
+            in {
+              "/" = { proxyPass = "${proxyPassBase}/smokeping.fcgi"; };
+              "/cache" = { proxyPass = "${proxyPassBase}/cache"; };
+              "/cropper" = { proxyPass = "${proxyPassBase}/cropper"; };
+            };
+          };
+
           "plex.orchard.computer" = {
             http2 = true;
 

@@ -36,7 +36,7 @@ in {
 
     security.acme = {
       acceptTerms = true;
-      email = cfg.acme.email;
+      defaults.email = cfg.acme.email;
     };
 
     networking.firewall = {

@@ -26,6 +26,8 @@ in {
     networking.firewall =
       mkIf cfg.openFirewall { allowedUDPPorts = [ cfg.port ]; };
 
+    networking.firewall.checkReversePath = "loose";
+
     systemd.services."tailscale-autoconnect" = {
       serviceConfig.Type = "oneshot";
 
@@ -44,7 +46,8 @@ in {
 
         if [ -f "${cfg.authKeyFile}" ]; then
           ${pkgs.tailscale}/bin/tailscale up \
-            --authkey=$(cat ${cfg.authKeyFile})
+            --auth-key=file:${cfg.authKeyFile} \
+            --login-server=https://headscale.orchard.computer:443
         fi
       '';
     };

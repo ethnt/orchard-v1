@@ -1,4 +1,1 @@
-final: prev:
-{
-
-}
+final: prev: { }

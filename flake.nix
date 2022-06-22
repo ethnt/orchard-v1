@@ -37,7 +37,7 @@
           };
         };
 
-        customPackages = import ./pkgs;
+        customPackages = import ./pkgs { inherit inputs; };
       in forAllSystems (system:
         import nixpkgs {
           inherit system;
@@ -86,6 +86,11 @@
         };
 
         resources = import ./resources;
+
+        portal = mkDeployment {
+          configuration = ./machines/portal/configuration.nix;
+          system = "x86_64-linux";
+        };
 
         gateway = mkDeployment {
           configuration = ./machines/gateway/configuration.nix;

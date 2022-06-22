@@ -7,6 +7,7 @@
     secrets = {
       nebula_host_key = { sopsFile = ./secrets.yaml; };
       nebula_host_cert = { sopsFile = ./secrets.yaml; };
+      tailscale_auth_key = { sopsFile = ./secrets.yaml; };
     };
   };
 
@@ -16,6 +17,11 @@
 
   orchard = {
     services = {
+      tailscale = {
+        enable = true;
+        openFirewall = true;
+        authKeyFile = config.sops.secrets.tailscale_auth_key.path;
+      };
       fail2ban = {
         enable = true;
         allowlist = [

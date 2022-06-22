@@ -20,6 +20,12 @@ in {
     https = mkRule { port = 443; };
     prometheus-node-exporter = mkRule { port = 9002; };
     prometheus-nginx-exporter = mkRule { port = 9113; };
+    wireguard = {
+      protocol = "udp";
+      fromPort = 51821;
+      toPort = 51899;
+      sourceIp = "0.0.0.0/0";
+    };
   in {
     monitor-security-group = { resources, ... }: {
       inherit region;
@@ -47,6 +53,20 @@ in {
         prometheus-nginx-exporter
       ];
     };
+
+    portal-security-group = { resources, ... }: {
+      inherit region;
+      description = "Security group for portal.orchard.computer";
+      rules = [
+        ssh
+        nebula
+        http
+        https
+        prometheus-node-exporter
+        prometheus-nginx-exporter
+        wireguard
+      ];
+    };
   };
 
   # elasticFileSystems = { matrix-elastic-storage = { inherit region; }; };
@@ -63,6 +83,8 @@ in {
     monitor-elastic-ip = { inherit region; };
 
     matrix-elastic-ip = { inherit region; };
+
+    portal-elastic-ip = { inherit region; };
   };
 
   route53HostedZones = {
@@ -83,6 +105,13 @@ in {
       domainName = "e10.land.";
       ttl = 15;
       recordValues = [ resources.machines.matrix ];
+    };
+
+    headscale-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "headscale.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.portal ];
     };
 
     monitor-record-set = { resources, ... }: {
@@ -159,7 +188,7 @@ in {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "overseerr.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     tautulli-record-set = { resources, ... }: {

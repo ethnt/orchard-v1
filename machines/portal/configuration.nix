@@ -27,9 +27,7 @@ in {
     enable = true;
     serverUrl = "https://headscale.orchard.computer:443";
     # privateKeyFile = config.sops.secrets.headscale_private_key.path;
-    settings = {
-      grpc_listen_addr = "127.0.0.1:50443";
-    };
+    settings = { grpc_listen_addr = "127.0.0.1:50443"; };
     dns.baseDomain = "orchard";
   };
 
@@ -81,8 +79,7 @@ in {
                 priority = 1;
               };
               "/metrics" = {
-                proxyPass =
-                  "http://127.0.0.1:9090";
+                proxyPass = "http://127.0.0.1:9090";
                 # extraConfig = ''
                 #   allow 10.0.0.0/8;
                 #   allow 100.64.0.0/16;

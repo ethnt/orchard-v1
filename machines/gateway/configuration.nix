@@ -22,6 +22,7 @@
         openFirewall = true;
         authKeyFile = config.sops.secrets.tailscale_auth_key.path;
       };
+
       fail2ban = {
         enable = true;
         allowlist = [

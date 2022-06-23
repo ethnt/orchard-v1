@@ -28,7 +28,7 @@ in {
     services.jellyfin = {
       inherit (cfg) enable user group openFirewall;
 
-      package = pkgs.unstable.jellyfin;
+      package = pkgs.jellyfin;
     };
   };
 }

@@ -23,18 +23,24 @@ in {
     };
   };
 
-  services.headscale = {
-    enable = true;
-    serverUrl = "https://headscale.orchard.computer:443";
-    # privateKeyFile = config.sops.secrets.headscale_private_key.path;
-    settings = { grpc_listen_addr = "127.0.0.1:50443"; };
-    dns.baseDomain = "orchard";
-  };
+  # services.headscale = {
+  #   enable = true;
+  #   serverUrl = "https://headscale.orchard.computer:443";
+  #   # privateKeyFile = config.sops.secrets.headscale_private_key.path;
+  #   settings = { grpc_listen_addr = "127.0.0.1:50443"; };
+  #   dns.baseDomain = "orchard";
+  # };
 
   # services.tailscale.enable = true;
 
   orchard = {
     services = {
+      headscale = {
+        enable = true;
+        externalServerUrl = "https://headscale.orchard.computer:443";
+        namespaces = [ "orchard" ];
+      };
+
       tailscale = {
         enable = true;
         openFirewall = true;

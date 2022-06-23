@@ -17,6 +17,11 @@ in {
       default = true;
     };
 
+    loginServer = mkOption {
+      type = types.str;
+      default = "https://headscale.orchard.computer:443";
+    };
+
     authKeyFile = mkOption { type = types.str; };
   };
 
@@ -26,8 +31,7 @@ in {
     networking.firewall =
       mkIf cfg.openFirewall { allowedUDPPorts = [ cfg.port ]; };
 
-    networking.firewall.checkReversePath = "loose";
-
+    systemd.services.tailscaled.wants = [ "tailscaled.service" ];
     systemd.services."tailscaled-autoconnect" = {
       serviceConfig.Type = "oneshot";
 
@@ -47,7 +51,7 @@ in {
         if [ -f "${cfg.authKeyFile}" ]; then
           ${pkgs.tailscale}/bin/tailscale up \
             --auth-key=file:${cfg.authKeyFile} \
-            --login-server=https://headscale.orchard.computer:443
+            --login-server=${cfg.loginServer}
         fi
       '';
     };

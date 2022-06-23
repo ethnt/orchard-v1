@@ -5,6 +5,7 @@
     ./fail2ban
     ./filebrowser
     ./grafana
+    ./headscale
     ./jellyfin
     ./loki
     ./miniflux

@@ -39,12 +39,18 @@ in {
         enable = true;
         externalServerUrl = "https://headscale.orchard.computer:443";
         namespaces = [ "orchard" ];
+        extraSettings = {
+          ip_prefixes = [ "fd7a:115c:a1e0::/48" "100.64.0.0/10" ];
+          metrics_listen_addr = "127.0.0.1:9090";
+        };
       };
 
       tailscale = {
         enable = true;
         openFirewall = true;
         authKeyFile = config.sops.secrets.tailscale_auth_key.path;
+        hostname = "portal";
+        namespace = "orchard";
       };
 
       nebula = {
@@ -86,11 +92,11 @@ in {
               };
               "/metrics" = {
                 proxyPass = "http://127.0.0.1:9090";
-                # extraConfig = ''
-                #   allow 10.0.0.0/8;
-                #   allow 100.64.0.0/16;
-                #   deny all;
-                # '';
+                extraConfig = ''
+                  allow 10.0.0.0/8;
+                  allow 100.64.0.0/16;
+                  deny all;
+                '';
                 priority = 2;
               };
               "/" = {
@@ -120,7 +126,7 @@ in {
 
             locations."/" = {
               proxyPass =
-                "http://${nodes.htpc.config.orchard.services.nebula.host.addr}:${
+                "http://${nodes.htpc.config.orchard.services.tailscale.fqdn}:${
                   toString nodes.htpc.config.orchard.services.overseerr.port
                 }";
               proxyWebsockets = true;

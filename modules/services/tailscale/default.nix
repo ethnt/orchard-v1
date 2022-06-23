@@ -17,6 +17,15 @@ in {
       default = true;
     };
 
+    hostname = mkOption { type = types.str; };
+
+    namespace = mkOption { type = types.str; };
+
+    fqdn = mkOption {
+      type = types.str;
+      default = "${cfg.hostname}.${cfg.namespace}";
+    };
+
     loginServer = mkOption {
       type = types.str;
       default = "https://headscale.orchard.computer:443";
@@ -51,7 +60,8 @@ in {
         if [ -f "${cfg.authKeyFile}" ]; then
           ${pkgs.tailscale}/bin/tailscale up \
             --auth-key=file:${cfg.authKeyFile} \
-            --login-server=${cfg.loginServer}
+            --login-server=${cfg.loginServer} \
+            --hostname=${cfg.hostname}
         fi
       '';
     };

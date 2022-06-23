@@ -28,7 +28,7 @@ in {
 
     networking.firewall.checkReversePath = "loose";
 
-    systemd.services."tailscale-autoconnect" = {
+    systemd.services."tailscaled-autoconnect" = {
       serviceConfig.Type = "oneshot";
 
       after = [ "tailscaled.service" ];

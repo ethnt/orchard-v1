@@ -1,6 +1,5 @@
 { config, pkgs, lib, ... }: {
   sops = {
-    # Set the secrets file location
     defaultSopsFile = ./secrets.yaml;
 
     secrets = {
@@ -10,11 +9,11 @@
     };
   };
 
-  imports = [ ../modules ];
+  imports = [ ../modules ../profiles/ssh-user ];
 
   time.timeZone = "America/New_York";
 
-  system.autoUpgrade.channel = "https://nixos.org/channels/nixos-21.11/";
+  system.autoUpgrade.channel = "https://nixos.org/channels/nixos-22.05/";
 
   networking.firewall.enable = true;
 
@@ -31,6 +30,8 @@
     programs.fish.enable = true;
 
     services = {
+      mosh.enable = true;
+
       nebula = {
         network = {
           name = "orchard";
@@ -38,7 +39,10 @@
         };
       };
 
-      openssh.enable = true;
+      openssh = {
+        enable = true;
+        openFirewall = true;
+      };
 
       zerotier = {
         enable = true;

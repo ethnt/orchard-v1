@@ -20,6 +20,12 @@ in {
     https = mkRule { port = 443; };
     prometheus-node-exporter = mkRule { port = 9002; };
     prometheus-nginx-exporter = mkRule { port = 9113; };
+    mosh = {
+      protocol = "udp";
+      fromPort = 60000;
+      toPort = 61000;
+      sourceIp = "0.0.0.0/0";
+    };
     wireguard = {
       protocol = "udp";
       fromPort = 51821;
@@ -32,6 +38,7 @@ in {
       description = "Security group for monitor.orchard.computer";
       rules = [
         ssh
+        mosh
         nebula
         loki
         http
@@ -46,6 +53,7 @@ in {
       description = "Security group for matrix.orchard.computer";
       rules = [
         ssh
+        mosh
         nebula
         http
         https
@@ -59,6 +67,7 @@ in {
       description = "Security group for portal.orchard.computer";
       rules = [
         ssh
+        mosh
         nebula
         http
         https

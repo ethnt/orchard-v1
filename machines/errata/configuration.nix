@@ -13,33 +13,6 @@
 
   networking.privateIPv4 = "192.168.1.45";
 
-  services.openssh = {
-    passwordAuthentication = true;
-    listenAddresses = [
-      {
-        addr = "100.64.0.4";
-        port = 2222;
-      }
-      {
-        addr = "0.0.0.0";
-        port = 22;
-      }
-    ];
-  };
-
-  users.users.admin = {
-    password = "admin";
-    createHome = false;
-    isNormalUser = true;
-  };
-
-  networking.firewall.interfaces = {
-    tailscale0 = {
-      allowedTCPPorts = [ 2222 ];
-      allowedUDPPorts = [ 2222 ];
-    };
-  };
-
   orchard = {
     services = {
       tailscale = {

@@ -31,6 +31,16 @@ in {
       default = "https://headscale.orchard.computer:443";
     };
 
+    advertiseExitNode = mkOption {
+      type = types.bool;
+      default = false;
+    };
+
+    exitNode = mkOption {
+      type = types.string;
+      default = "";
+    };
+
     authKeyFile = mkOption { type = types.str; };
   };
 

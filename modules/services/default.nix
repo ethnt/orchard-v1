@@ -8,6 +8,7 @@
     ./headscale
     ./jellyfin
     ./loki
+    ./mosh
     ./miniflux
     ./nebula
     ./nginx

@@ -47,8 +47,10 @@ in {
   config = mkIf cfg.enable {
     services.tailscale = { inherit (cfg) enable port; };
 
-    networking.firewall =
-      mkIf cfg.openFirewall { allowedUDPPorts = [ cfg.port ]; };
+    networking.firewall = {
+      checkReversePath = "loose";
+      allowedUDPPorts = mkIf cfg.openFirewall [ cfg.port ];
+    };
 
     systemd.services.tailscaled.wants = [ "tailscaled.service" ];
     systemd.services."tailscaled-autoconnect" = {

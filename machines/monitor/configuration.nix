@@ -16,11 +16,7 @@ in {
   };
 
   sops = {
-    secrets = {
-      nebula_host_key = { sopsFile = ./secrets.yaml; };
-      nebula_host_cert = { sopsFile = ./secrets.yaml; };
-      tailscale_auth_key = { sopsFile = ./secrets.yaml; };
-    };
+    secrets = { tailscale_auth_key = { sopsFile = ./secrets.yaml; }; };
   };
 
   networking.firewall.enable = lib.mkForce false;
@@ -33,26 +29,6 @@ in {
         authKeyFile = config.sops.secrets.tailscale_auth_key.path;
         hostname = "monitor";
         namespace = "orchard";
-      };
-
-      nebula = {
-        enable = true;
-        network = {
-          lighthouses = [ "10.10.10.1" ];
-          staticHostMap = {
-            "10.10.10.1" =
-              [ "${nodes.gateway.config.networking.publicIPv4}:4242" ];
-            "10.10.10.2" =
-              [ "${nodes.gateway.config.networking.publicIPv4}:4343" ];
-            "10.10.10.3" =
-              [ "${nodes.gateway.config.networking.publicIPv4}:4444" ];
-          };
-        };
-        host = {
-          addr = "10.10.10.4";
-          keyPath = config.sops.secrets.nebula_host_key.path;
-          certPath = config.sops.secrets.nebula_host_cert.path;
-        };
       };
 
       nginx = {

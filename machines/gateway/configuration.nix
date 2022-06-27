@@ -4,11 +4,7 @@
   imports = [ ../../profiles/virtualized ./hardware-configuration.nix ];
 
   sops = {
-    secrets = {
-      nebula_host_key = { sopsFile = ./secrets.yaml; };
-      nebula_host_cert = { sopsFile = ./secrets.yaml; };
-      tailscale_auth_key = { sopsFile = ./secrets.yaml; };
-    };
+    secrets = { tailscale_auth_key = { sopsFile = ./secrets.yaml; }; };
   };
 
   # TODO: Make this not manual
@@ -35,16 +31,6 @@
           "192.168.0.0/16"
           "8.8.8.8"
         ];
-      };
-
-      nebula = {
-        enable = true;
-        host = {
-          addr = "10.10.10.1";
-          isLighthouse = true;
-          keyPath = config.sops.secrets.nebula_host_key.path;
-          certPath = config.sops.secrets.nebula_host_cert.path;
-        };
       };
 
       nginx = {

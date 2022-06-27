@@ -17,21 +17,10 @@ in {
 
   sops = {
     secrets = {
-      nebula_host_key = { sopsFile = ./secrets.yaml; };
-      nebula_host_cert = { sopsFile = ./secrets.yaml; };
+      headscale_private_key = { sopsFile = ./secrets.yaml; };
       tailscale_auth_key = { sopsFile = ./secrets.yaml; };
     };
   };
-
-  # services.headscale = {
-  #   enable = true;
-  #   serverUrl = "https://headscale.orchard.computer:443";
-  #   # privateKeyFile = config.sops.secrets.headscale_private_key.path;
-  #   settings = { grpc_listen_addr = "127.0.0.1:50443"; };
-  #   dns.baseDomain = "orchard";
-  # };
-
-  # services.tailscale.enable = true;
 
   orchard = {
     services = {
@@ -43,6 +32,7 @@ in {
           ip_prefixes = [ "fd7a:115c:a1e0::/48" "100.64.0.0/10" ];
           metrics_listen_addr = "127.0.0.1:9090";
         };
+        # privateKeyFile = config.sops.secrets.headscale_private_key.path;
       };
 
       tailscale = {
@@ -51,27 +41,6 @@ in {
         authKeyFile = config.sops.secrets.tailscale_auth_key.path;
         hostname = "portal";
         namespace = "orchard";
-      };
-
-      nebula = {
-        enable = true;
-        network = {
-          lighthouses = [ "10.10.10.1" ];
-          staticHostMap = {
-            "10.10.10.1" =
-              [ "${nodes.gateway.config.networking.publicIPv4}:4242" ];
-            "10.10.10.2" =
-              [ "${nodes.gateway.config.networking.publicIPv4}:4343" ];
-            "10.10.10.3" =
-              [ "${nodes.gateway.config.networking.publicIPv4}:4444" ];
-          };
-        };
-
-        host = {
-          addr = "10.10.10.6";
-          keyPath = config.sops.secrets.nebula_host_key.path;
-          certPath = config.sops.secrets.nebula_host_cert.path;
-        };
       };
 
       docker.enable = true;

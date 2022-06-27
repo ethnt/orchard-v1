@@ -3,7 +3,6 @@
     defaultSopsFile = ./secrets.yaml;
 
     secrets = {
-      nebula_ca_cert = { };
       aws_credentials = { };
       backup_password = { };
     };
@@ -31,13 +30,6 @@
 
     services = {
       mosh.enable = true;
-
-      nebula = {
-        network = {
-          name = "orchard";
-          caPath = config.sops.secrets.nebula_ca_cert.path;
-        };
-      };
 
       openssh = {
         enable = true;

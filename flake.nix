@@ -17,37 +17,23 @@
   outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-master, nixops, sops-nix
     , flake-utils, ... }@inputs:
     let
-      utils = import ./lib/utils.nix {
-        inherit (nixpkgs) lib;
-        inherit self inputs;
-      };
-
-      inherit (utils) forAllSystems vmBaseImage runCodeAnalysis;
-
-      nixpkgsFor = let
+      pkgsFor = let
         overlay-unstable = final: prev: {
-          unstable = import inputs.nixpkgs-unstable {
-            inherit (final) system;
-            config.allowUnfree = true;
-          };
-
-          master = import nixpkgs-master {
+          unstable = inputs.nixpkgs-unstable {
             inherit (final) system;
             config.allowUnfree = true;
           };
         };
-
-        customPackages = import ./pkgs;
-      in forAllSystems (system:
-        import nixpkgs {
-          inherit system;
-          overlays = [ customPackages overlay-unstable ];
-          config.allowUnfree = true;
-        });
+      in system:
+      import nixpkgs {
+        inherit system;
+        overlays = [ overlay-unstable ];
+        config.allowUnfree = true;
+      };
 
       mkDeployment = { system, configuration, initialDeploy ? false }: {
         nixpkgs = {
-          pkgs = nixpkgsFor.${system};
+          pkgs = pkgsFor system;
           localSystem = { inherit system; };
         };
 
@@ -81,7 +67,7 @@
           imports = [{
             imports = [ sops-nix.nixosModules.sops ];
             nix.nixPath = [ "nixpkgs=${nixpkgs}" ];
-            nixpkgs.pkgs = nixpkgsFor."x86_64-linux";
+            nixpkgs.pkgs = pkgsFor "x86_64-linux";
           }];
         };
 
@@ -111,12 +97,24 @@
           configuration = ./machines/errata/configuration.nix;
           system = "x86_64-linux";
         };
+
+        portal = mkDeployment {
+          configuration = ./machines/portal/configuration.nix;
+          system = "x86_64-linux";
+        };
       };
     } // flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
       let pkgs = nixpkgs-unstable.legacyPackages.${system};
       in {
-        checks = {
-          nixfmt = runCodeAnalysis system "nixfmt" ''
+        checks = let
+          runCodeAnalysis = name: command:
+            pkgs.runCommand "orchard-${name}" { } ''
+              cd ${self}
+              ${command}
+              mkdir $out
+            '';
+        in {
+          nixfmt = runCodeAnalysis "nixfmt" ''
             ${pkgs.nixfmt}/bin/nixfmt --check \
               $(find . -type f -name '*.nix')
           '';

@@ -56,7 +56,7 @@ in {
     services.grafana = {
       inherit (cfg) enable domain port addr;
 
-      package = pkgs.unstable.grafana;
+      package = pkgs.grafana;
 
       provision = {
         enable = true;

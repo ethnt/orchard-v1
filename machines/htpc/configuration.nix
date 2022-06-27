@@ -4,10 +4,7 @@
   imports = [ ../../profiles/virtualized ./hardware-configuration.nix ];
 
   sops = {
-    secrets = {
-      nebula_host_key = { sopsFile = ./secrets.yaml; };
-      nebula_host_cert = { sopsFile = ./secrets.yaml; };
-    };
+    secrets = { tailscale_auth_key = { sopsFile = ./secrets.yaml; }; };
   };
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -47,20 +44,12 @@
 
   orchard = {
     services = {
-      nebula = {
+      tailscale = {
         enable = true;
-        network = {
-          lighthouses = [ "10.10.10.1" ];
-          staticHostMap = {
-            "10.10.10.1" =
-              [ "${nodes.gateway.config.deployment.targetHost}:4242" ];
-          };
-        };
-        host = {
-          addr = "10.10.10.2";
-          keyPath = config.sops.secrets.nebula_host_key.path;
-          certPath = config.sops.secrets.nebula_host_cert.path;
-        };
+        openFirewall = true;
+        authKeyFile = config.sops.secrets.tailscale_auth_key.path;
+        hostname = "htpc";
+        namespace = "orchard";
       };
 
       docker.enable = true;

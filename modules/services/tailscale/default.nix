@@ -17,16 +17,43 @@ in {
       default = true;
     };
 
+    hostname = mkOption { type = types.str; };
+
+    namespace = mkOption { type = types.str; };
+
+    fqdn = mkOption {
+      type = types.str;
+      default = "${cfg.hostname}.${cfg.namespace}";
+    };
+
+    loginServer = mkOption {
+      type = types.str;
+      default = "https://headscale.orchard.computer:443";
+    };
+
+    advertiseExitNode = mkOption {
+      type = types.bool;
+      default = false;
+    };
+
+    exitNode = mkOption {
+      type = types.string;
+      default = "";
+    };
+
     authKeyFile = mkOption { type = types.str; };
   };
 
   config = mkIf cfg.enable {
     services.tailscale = { inherit (cfg) enable port; };
 
-    networking.firewall =
-      mkIf cfg.openFirewall { allowedUDPPorts = [ cfg.port ]; };
+    networking.firewall = {
+      checkReversePath = "loose";
+      allowedUDPPorts = mkIf cfg.openFirewall [ cfg.port ];
+    };
 
-    systemd.services."tailscale-autoconnect" = {
+    systemd.services.tailscaled.wants = [ "tailscaled.service" ];
+    systemd.services."tailscaled-autoconnect" = {
       serviceConfig.Type = "oneshot";
 
       after = [ "tailscaled.service" ];
@@ -44,7 +71,9 @@ in {
 
         if [ -f "${cfg.authKeyFile}" ]; then
           ${pkgs.tailscale}/bin/tailscale up \
-            --authkey=$(cat ${cfg.authKeyFile})
+            --auth-key=file:${cfg.authKeyFile} \
+            --login-server=${cfg.loginServer} \
+            --hostname=${cfg.hostname}
         fi
       '';
     };

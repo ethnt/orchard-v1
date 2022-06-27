@@ -14,8 +14,7 @@ in {
 
   config = mkIf cfg.enable {
     services.unifi = {
-      enable = true;
-      openPorts = cfg.openFirewall;
+      inherit (cfg) enable openFirewall;
       unifiPackage = pkgs.unifi;
     };
 

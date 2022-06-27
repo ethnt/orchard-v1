@@ -1,20 +1,18 @@
 { config, pkgs, lib, ... }: {
   sops = {
-    # Set the secrets file location
     defaultSopsFile = ./secrets.yaml;
 
     secrets = {
-      nebula_ca_cert = { };
       aws_credentials = { };
       backup_password = { };
     };
   };
 
-  imports = [ ../modules ];
+  imports = [ ../modules ../profiles/ssh-user ];
 
   time.timeZone = "America/New_York";
 
-  system.autoUpgrade.channel = "https://nixos.org/channels/nixos-21.11/";
+  system.autoUpgrade.channel = "https://nixos.org/channels/nixos-22.05/";
 
   networking.firewall.enable = true;
 
@@ -31,18 +29,11 @@
     programs.fish.enable = true;
 
     services = {
-      nebula = {
-        network = {
-          name = "orchard";
-          caPath = config.sops.secrets.nebula_ca_cert.path;
-        };
-      };
+      mosh.enable = true;
 
-      openssh.enable = true;
-
-      zerotier = {
+      openssh = {
         enable = true;
-        networkId = "9bee8941b5fb2362";
+        openFirewall = true;
       };
     };
   };

@@ -5,8 +5,10 @@
     ./fail2ban
     ./filebrowser
     ./grafana
+    ./headscale
     ./jellyfin
     ./loki
+    ./mosh
     ./miniflux
     ./nebula
     ./nginx
@@ -33,6 +35,5 @@
     ./tautulli
     ./tdarr
     ./unifi
-    ./zerotier
   ];
 }

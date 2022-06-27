@@ -17,32 +17,19 @@ in {
 
   sops = {
     secrets = {
-      nebula_host_key = { sopsFile = ./secrets.yaml; };
-      nebula_host_cert = { sopsFile = ./secrets.yaml; };
       miniflux_credentials = { sopsFile = ./secrets.yaml; };
+      tailscale_auth_key = { sopsFile = ./secrets.yaml; };
     };
   };
 
   orchard = {
     services = {
-      nebula = {
+      tailscale = {
         enable = true;
-        network = {
-          lighthouses = [ "10.10.10.1" ];
-          staticHostMap = {
-            "10.10.10.1" =
-              [ "${nodes.gateway.config.networking.publicIPv4}:4242" ];
-            "10.10.10.2" =
-              [ "${nodes.gateway.config.networking.publicIPv4}:4343" ];
-            "10.10.10.3" =
-              [ "${nodes.gateway.config.networking.publicIPv4}:4444" ];
-          };
-        };
-        host = {
-          addr = "10.10.10.5";
-          keyPath = config.sops.secrets.nebula_host_key.path;
-          certPath = config.sops.secrets.nebula_host_cert.path;
-        };
+        openFirewall = true;
+        authKeyFile = config.sops.secrets.tailscale_auth_key.path;
+        hostname = "matrix";
+        namespace = "orchard";
       };
 
       docker.enable = true;
@@ -117,7 +104,7 @@ in {
 
             locations."/" = {
               proxyPass =
-                "http://${nodes.matrix.config.orchard.services.nebula.host.addr}:${
+                "http://${nodes.matrix.config.orchard.services.tailscale.fqdn}:${
                   toString nodes.htpc.config.orchard.services.filebrowser.port
                 }";
               proxyWebsockets = true;
@@ -132,7 +119,7 @@ in {
 
             locations."/" = {
               proxyPass =
-                "http://${nodes.matrix.config.orchard.services.nebula.host.addr}:${
+                "http://${nodes.matrix.config.orchard.services.tailscale.fqdn}:${
                   toString nodes.htpc.config.orchard.services.miniflux.port
                 }";
               proxyWebsockets = true;

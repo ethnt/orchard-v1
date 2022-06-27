@@ -32,7 +32,7 @@ in {
     services.plex = {
       inherit (cfg) enable user group openFirewall dataDir;
 
-      package = pkgs.master.plex;
+      package = pkgs.plex;
     };
   };
 }

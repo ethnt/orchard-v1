@@ -20,12 +20,25 @@ in {
     https = mkRule { port = 443; };
     prometheus-node-exporter = mkRule { port = 9002; };
     prometheus-nginx-exporter = mkRule { port = 9113; };
+    mosh = {
+      protocol = "udp";
+      fromPort = 60000;
+      toPort = 61000;
+      sourceIp = "0.0.0.0/0";
+    };
+    wireguard = {
+      protocol = "udp";
+      fromPort = 51821;
+      toPort = 51899;
+      sourceIp = "0.0.0.0/0";
+    };
   in {
     monitor-security-group = { resources, ... }: {
       inherit region;
       description = "Security group for monitor.orchard.computer";
       rules = [
         ssh
+        mosh
         nebula
         loki
         http
@@ -40,11 +53,27 @@ in {
       description = "Security group for matrix.orchard.computer";
       rules = [
         ssh
+        mosh
         nebula
         http
         https
         prometheus-node-exporter
         prometheus-nginx-exporter
+      ];
+    };
+
+    portal-security-group = { resources, ... }: {
+      inherit region;
+      description = "Security group for portal.orchard.computer";
+      rules = [
+        ssh
+        mosh
+        nebula
+        http
+        https
+        prometheus-node-exporter
+        prometheus-nginx-exporter
+        wireguard
       ];
     };
   };
@@ -63,6 +92,8 @@ in {
     monitor-elastic-ip = { inherit region; };
 
     matrix-elastic-ip = { inherit region; };
+
+    portal-elastic-ip = { inherit region; };
   };
 
   route53HostedZones = {
@@ -83,6 +114,13 @@ in {
       domainName = "e10.land.";
       ttl = 15;
       recordValues = [ resources.machines.matrix ];
+    };
+
+    headscale-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "headscale.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.portal ];
     };
 
     monitor-record-set = { resources, ... }: {
@@ -131,49 +169,49 @@ in {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "sonarr.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     radarr-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "radarr.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     nzbget-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "nzbget.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     prowlarr-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "prowlarr.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     overseerr-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "overseerr.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     tautulli-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "tautulli.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     sabnzbd-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "sabnzbd.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     metrics-satan-record-set = { resources, ... }: {
@@ -187,28 +225,28 @@ in {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "pve.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     plex-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "plex.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     jellyfin-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "jellyfin.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     smokeping-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "smokeping.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     feeds-record-set = { resources, ... }: {

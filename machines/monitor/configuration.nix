@@ -16,34 +16,19 @@ in {
   };
 
   sops = {
-    secrets = {
-      nebula_host_key = { sopsFile = ./secrets.yaml; };
-      nebula_host_cert = { sopsFile = ./secrets.yaml; };
-    };
+    secrets = { tailscale_auth_key = { sopsFile = ./secrets.yaml; }; };
   };
 
   networking.firewall.enable = lib.mkForce false;
 
   orchard = {
     services = {
-      nebula = {
+      tailscale = {
         enable = true;
-        network = {
-          lighthouses = [ "10.10.10.1" ];
-          staticHostMap = {
-            "10.10.10.1" =
-              [ "${nodes.gateway.config.networking.publicIPv4}:4242" ];
-            "10.10.10.2" =
-              [ "${nodes.gateway.config.networking.publicIPv4}:4343" ];
-            "10.10.10.3" =
-              [ "${nodes.gateway.config.networking.publicIPv4}:4444" ];
-          };
-        };
-        host = {
-          addr = "10.10.10.4";
-          keyPath = config.sops.secrets.nebula_host_key.path;
-          certPath = config.sops.secrets.nebula_host_cert.path;
-        };
+        openFirewall = true;
+        authKeyFile = config.sops.secrets.tailscale_auth_key.path;
+        hostname = "monitor";
+        namespace = "orchard";
       };
 
       nginx = {
@@ -86,7 +71,7 @@ in {
               type = "prometheus";
               access = "proxy";
               url =
-                "http://${nodes.monitor.config.orchard.services.nebula.host.addr}:${
+                "http://${nodes.monitor.config.orchard.services.tailscale.fqdn}:${
                   toString config.orchard.services.prometheus.port
                 }";
             }
@@ -95,7 +80,7 @@ in {
               type = "loki";
               access = "proxy";
               url =
-                "http://${nodes.monitor.config.orchard.services.nebula.host.addr}:${
+                "http://${nodes.monitor.config.orchard.services.tailscale.fqdn}:${
                   toString config.orchard.services.loki.port
                 }";
             }
@@ -145,7 +130,7 @@ in {
             job_name = "monitor";
             static_configs = [{
               targets = [
-                "${nodes.monitor.config.orchard.services.nebula.host.addr}:${
+                "${nodes.monitor.config.orchard.services.tailscale.fqdn}:${
                   toString
                   nodes.monitor.config.orchard.services.prometheus-node-exporter.port
                 }"
@@ -156,7 +141,7 @@ in {
             job_name = "gateway";
             static_configs = [{
               targets = [
-                "${nodes.gateway.config.orchard.services.nebula.host.addr}:${
+                "${nodes.gateway.config.orchard.services.tailscale.fqdn}:${
                   toString
                   nodes.gateway.config.orchard.services.prometheus-node-exporter.port
                 }"
@@ -167,7 +152,7 @@ in {
             job_name = "htpc";
             static_configs = [{
               targets = [
-                "${nodes.htpc.config.orchard.services.nebula.host.addr}:${
+                "${nodes.htpc.config.orchard.services.tailscale.fqdn}:${
                   toString
                   nodes.htpc.config.orchard.services.prometheus-node-exporter.port
                 }"
@@ -178,7 +163,7 @@ in {
             job_name = "errata";
             static_configs = [{
               targets = [
-                "${nodes.errata.config.orchard.services.nebula.host.addr}:${
+                "${nodes.errata.config.orchard.services.tailscale.fqdn}:${
                   toString
                   nodes.errata.config.orchard.services.prometheus-node-exporter.port
                 }"
@@ -189,7 +174,7 @@ in {
             job_name = "matrix";
             static_configs = [{
               targets = [
-                "${nodes.matrix.config.orchard.services.nebula.host.addr}:${
+                "${nodes.matrix.config.orchard.services.tailscale.fqdn}:${
                   toString
                   nodes.matrix.config.orchard.services.prometheus-node-exporter.port
                 }"
@@ -205,7 +190,7 @@ in {
             job_name = "gateway_nginx";
             static_configs = [{
               targets = [
-                "${nodes.gateway.config.orchard.services.nebula.host.addr}:${
+                "${nodes.gateway.config.orchard.services.tailscale.fqdn}:${
                   toString
                   nodes.gateway.config.orchard.services.prometheus-nginx-exporter.port
                 }"
@@ -216,7 +201,7 @@ in {
             job_name = "monitor_nginx";
             static_configs = [{
               targets = [
-                "${nodes.monitor.config.orchard.services.nebula.host.addr}:${
+                "${nodes.monitor.config.orchard.services.tailscale.fqdn}:${
                   toString
                   nodes.monitor.config.orchard.services.prometheus-nginx-exporter.port
                 }"
@@ -227,7 +212,7 @@ in {
             job_name = "matrix_nginx";
             static_configs = [{
               targets = [
-                "${nodes.matrix.config.orchard.services.nebula.host.addr}:${
+                "${nodes.matrix.config.orchard.services.tailscale.fqdn}:${
                   toString
                   nodes.matrix.config.orchard.services.prometheus-nginx-exporter.port
                 }"
@@ -238,7 +223,7 @@ in {
             job_name = "apcupsd";
             static_configs = [{
               targets = [
-                "${nodes.errata.config.orchard.services.nebula.host.addr}:${
+                "${nodes.errata.config.orchard.services.tailscale.fqdn}:${
                   toString
                   nodes.errata.config.orchard.services.prometheus-apcupsd-exporter.port
                 }"
@@ -264,7 +249,7 @@ in {
               {
                 target_label = "__address__";
                 replacement =
-                  "${nodes.errata.config.orchard.services.nebula.host.addr}:${
+                  "${nodes.errata.config.orchard.services.tailscale.fqdn}:${
                     toString
                     nodes.errata.config.orchard.services.prometheus-snmp-exporter.port
                   }";
@@ -275,7 +260,7 @@ in {
           #   job_name = "smokeping";
           #   static_configs = [{
           #     targets = [
-          #       "${nodes.errata.config.orchard.services.nebula.host.addr}:${
+          #       "${nodes.errata.config.orchard.services.tailscale.fqdn}:${
           #         toString
           #         nodes.errata.config.orchard.services.prometheus-smokeping-exporter.port
           #       }"

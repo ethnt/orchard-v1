@@ -43,10 +43,9 @@ in {
         namespace = "orchard";
       };
 
-      docker.enable = true;
-
       nginx = {
         enable = true;
+        fqdn = "portal.orchard.computer";
         acme = { email = "admin@orchard.computer"; };
         virtualHosts = {
           "headscale.orchard.computer" = {
@@ -283,6 +282,38 @@ in {
               proxyWebsockets = true;
             };
           };
+        };
+      };
+
+      promtail = {
+        enable = true;
+        host = "portal";
+        lokiServerConfiguration = {
+          host = nodes.monitor.config.orchard.services.loki.host;
+          port = nodes.monitor.config.orchard.services.loki.port;
+        };
+      };
+
+      prometheus-node-exporter = {
+        enable = true;
+        host = "portal.orchard.computer";
+        openFirewall = true;
+      };
+
+      prometheus-nginx-exporter = {
+        enable = true;
+        scrapeUri = "http://portal.orchard.computer/stub_status";
+        openFirewall = true;
+      };
+
+      restic = {
+        enable = true;
+        backupName = "portal";
+        paths = [ "/var/lib" ];
+        passwordFile = config.sops.secrets.backup_password.path;
+        s3 = {
+          bucketName = resources.s3Buckets.portal-backups-bucket.name;
+          credentialsFile = config.sops.secrets.aws_credentials.path;
         };
       };
     };

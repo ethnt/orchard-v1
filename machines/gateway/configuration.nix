@@ -35,16 +35,9 @@
 
       nginx = {
         enable = true;
+        fqdn = "gateway.orchard.computer";
         acme = { email = "admin@orchard.computer"; };
         virtualHosts = {
-          "gateway.orchard.computer" = {
-            locations."/stub_status" = {
-              extraConfig = ''
-                stub_status;
-              '';
-            };
-          };
-
           "metrics.satan.orchard.computer" = {
             locations."/" = { proxyPass = "http://192.168.1.1:9002"; };
           };

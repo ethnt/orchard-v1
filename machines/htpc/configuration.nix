@@ -110,7 +110,7 @@
 
       prometheus-node-exporter = {
         enable = true;
-        host = "monitor.orchard.computer";
+        host = "htpc.orchard.computer";
         openFirewall = true;
       };
 

@@ -11,6 +11,7 @@ in {
         options = { email = mkOption { type = types.str; }; };
       };
     };
+    fqdn = mkOption { type = types.str; };
     virtualHosts = mkOption {
       type = types.attrs;
       default = { };
@@ -23,7 +24,20 @@ in {
 
   config = mkIf cfg.enable {
     services.nginx = {
-      inherit (cfg) enable virtualHosts upstreams;
+      inherit (cfg) enable upstreams;
+
+      virtualHosts = mkMerge [
+        {
+          "${cfg.fqdn}" = {
+            locations."/stub_status" = {
+              extraConfig = ''
+                stub_status;
+              '';
+            };
+          };
+        }
+        cfg.virtualHosts
+      ];
 
       package =
         pkgs.nginx.override { modules = [ pkgs.nginxModules.fancyindex ]; };

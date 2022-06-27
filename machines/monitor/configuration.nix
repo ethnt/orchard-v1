@@ -33,17 +33,9 @@ in {
 
       nginx = {
         enable = true;
+        fqdn = "monitor.orchard.computer";
         acme.email = "admin@orchard.computer";
-
         virtualHosts = {
-          "monitor.orchard.computer" = {
-            locations."/stub_status" = {
-              extraConfig = ''
-                stub_status;
-              '';
-            };
-          };
-
           "grafana.orchard.computer" = {
             http2 = true;
 
@@ -182,6 +174,17 @@ in {
             }];
           }
           {
+            job_name = "portal";
+            static_configs = [{
+              targets = [
+                "${nodes.portal.config.orchard.services.tailscale.fqdn}:${
+                  toString
+                  nodes.portal.config.orchard.services.prometheus-node-exporter.port
+                }"
+              ];
+            }];
+          }
+          {
             job_name = "pfsense";
             static_configs =
               [{ targets = [ "metrics.satan.orchard.computer" ]; }];
@@ -215,6 +218,17 @@ in {
                 "${nodes.matrix.config.orchard.services.tailscale.fqdn}:${
                   toString
                   nodes.matrix.config.orchard.services.prometheus-nginx-exporter.port
+                }"
+              ];
+            }];
+          }
+          {
+            job_name = "portal_nginx";
+            static_configs = [{
+              targets = [
+                "${nodes.portal.config.orchard.services.tailscale.fqdn}:${
+                  toString
+                  nodes.portal.config.orchard.services.prometheus-nginx-exporter.port
                 }"
               ];
             }];

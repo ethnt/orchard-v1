@@ -68,17 +68,10 @@ in {
 
       nginx = {
         enable = true;
+        fqdn = "matrix.orchard.computer";
         acme.email = "admin@orchard.computer";
 
         virtualHosts = {
-          "matrix.orchard.computer" = {
-            locations."/stub_status" = {
-              extraConfig = ''
-                stub_status;
-              '';
-            };
-          };
-
           "e10.land" = {
             forceSSL = true;
             enableACME = true;

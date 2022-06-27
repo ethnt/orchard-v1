@@ -116,6 +116,13 @@ in {
       recordValues = [ resources.machines.matrix ];
     };
 
+    portal-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "portal.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.portal ];
+    };
+
     headscale-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "headscale.orchard.computer.";
@@ -280,6 +287,13 @@ in {
       }
     '';
   in {
+    portal-backups-bucket = {
+      inherit region;
+      name = "orchard-portal-backups";
+      versioning = "Suspended";
+      lifeCycle = glacierLifeCycleConfig;
+    };
+
     errata-backups-bucket = {
       inherit region;
       name = "orchard-errata-backups";

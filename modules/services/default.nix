@@ -35,6 +35,5 @@
     ./tautulli
     ./tdarr
     ./unifi
-    ./zerotier
   ];
 }

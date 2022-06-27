@@ -169,28 +169,28 @@ in {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "sonarr.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     radarr-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "radarr.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     nzbget-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "nzbget.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     prowlarr-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "prowlarr.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     overseerr-record-set = { resources, ... }: {
@@ -204,14 +204,14 @@ in {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "tautulli.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     sabnzbd-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "sabnzbd.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     metrics-satan-record-set = { resources, ... }: {
@@ -225,28 +225,28 @@ in {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "pve.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     plex-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "plex.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     jellyfin-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "jellyfin.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     smokeping-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
       domainName = "smokeping.orchard.computer.";
       ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+      recordValues = [ resources.machines.portal ];
     };
 
     feeds-record-set = { resources, ... }: {

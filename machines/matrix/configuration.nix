@@ -126,7 +126,7 @@ in {
 
             locations."/" = {
               proxyPass =
-                "http://${nodes.matrix.config.orchard.services.nebula.host.addr}:${
+                "http://${nodes.matrix.config.orchard.services.tailscale.fqdn}:${
                   toString nodes.htpc.config.orchard.services.filebrowser.port
                 }";
               proxyWebsockets = true;
@@ -141,7 +141,7 @@ in {
 
             locations."/" = {
               proxyPass =
-                "http://${nodes.matrix.config.orchard.services.nebula.host.addr}:${
+                "http://${nodes.matrix.config.orchard.services.tailscale.fqdn}:${
                   toString nodes.htpc.config.orchard.services.miniflux.port
                 }";
               proxyWebsockets = true;

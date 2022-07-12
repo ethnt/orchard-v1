@@ -1,0 +1,1 @@
+state.nixops filter=git-crypt diff=git-crypt

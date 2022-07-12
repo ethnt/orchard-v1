@@ -1,3 +1,8 @@
 /.direnv/
 /tmp/
 state.nixops*
+
+/.terraform/
+config.tf.json
+terraform.tfstate*
+.terraform.lock.hcl

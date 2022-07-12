@@ -10,12 +10,15 @@
 
     sops-nix.url = "github:Mic92/sops-nix";
 
+    terranix.url = "github:terranix/terranix";
+    terranix.inputs.nixpkgs.follows = "nixpkgs";
+
     flake-utils.url = "github:numtide/flake-utils";
     flake-utils.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-master, nixops, sops-nix
-    , flake-utils, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-master, nixops, terranix
+    , sops-nix, flake-utils, ... }@inputs:
     let
       pkgsFor = let
         overlay-unstable = final: prev: {
@@ -104,8 +107,36 @@
         };
       };
     } // flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
-      let pkgs = nixpkgs-unstable.legacyPackages.${system};
+      let
+        pkgs = nixpkgs-unstable.legacyPackages.${system};
+        terraform = pkgs.terraform;
+        terraformConfiguration = terranix.lib.terranixConfiguration {
+          inherit system;
+          modules = [ ./deploy/proxmox.nix ];
+        };
       in {
+        apps = {
+          plan = {
+            type = "app";
+            program = toString (pkgs.writers.writeBash "plan" ''
+              if [[ -e config.tf.json ]]; then rm -f config.tf.json; fi
+              cp ${terraformConfiguration} config.tf.json \
+                && ${terraform}/bin/terraform init \
+                && ${terraform}/bin/terraform plan
+            '');
+          };
+
+          apply = {
+            type = "app";
+            program = toString (pkgs.writers.writeBash "apply" ''
+              if [[ -e config.tf.json ]]; then rm -f config.tf.json; fi
+              cp ${terraformConfiguration} config.tf.json \
+                && ${terraform}/bin/terraform init \
+                && ${terraform}/bin/terraform apply
+            '');
+          };
+        };
+
         checks = let
           runCodeAnalysis = name: command:
             pkgs.runCommand "orchard-${name}" { } ''
@@ -122,9 +153,10 @@
 
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs;
-            [ age git nixfmt ssh-to-age sops ] ++ [
+            [ age git nixfmt ssh-to-age sops terraform ] ++ [
               nixops.defaultPackage.${system}
               sops-nix.defaultPackage.${system}
+              terranix.defaultPackage.${system}
             ];
 
           # TODO: See if this can be done like the other environment variables

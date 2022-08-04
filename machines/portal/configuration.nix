@@ -6,7 +6,7 @@ in {
     ec2 = {
       inherit (aws) region;
 
-      instanceType = "t3.small";
+      instanceType = "t3.micro";
       keyPair = resources.ec2KeyPairs.deployment-key;
       securityGroups = [ resources.ec2SecurityGroups.portal-security-group ];
       ebsBoot = true;

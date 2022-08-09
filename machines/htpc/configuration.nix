@@ -129,6 +129,11 @@
         enable = true;
         openFirewall = true;
       };
+
+      xteve = {
+        enable = true;
+        openFirewall = true;
+      };
     };
   };
 }

@@ -35,5 +35,6 @@
     ./tautulli
     ./tdarr
     ./unifi
+    ./xteve
   ];
 }

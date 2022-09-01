@@ -21,7 +21,7 @@ in {
     nix.trustedUsers = [ "builder" ];
 
     users.extraUsers.builder = {
-      createHome = false;
+      createHome = true;
       isNormalUser = true;
       isSystemUser = false;
       extraGroups = [ "wheel" ];

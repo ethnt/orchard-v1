@@ -102,6 +102,11 @@
           configuration = ./machines/portal/configuration.nix;
           system = "x86_64-linux";
         };
+
+        branch = mkDeployment {
+          configuration = ./machines/branch/configuration.nix;
+          system = "aarch64-linux";
+        };
       };
     } // flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
       let pkgs = nixpkgs-unstable.legacyPackages.${system};

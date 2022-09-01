@@ -13,6 +13,7 @@ in {
   config = mkIf cfg.enable {
     services.github-runner = {
       inherit (cfg) enable url tokenFile;
+      package = pkgs.unstable.github-runner;
     };
   };
 }

@@ -19,10 +19,7 @@
     let
       pkgsFor = let
         overlay-unstable = final: prev: {
-          unstable = inputs.nixpkgs-unstable {
-            inherit (final) system;
-            config.allowUnfree = true;
-          };
+          unstable = inputs.nixpkgs-unstable.legacyPackages.${final.system};
         };
       in system:
       import nixpkgs {

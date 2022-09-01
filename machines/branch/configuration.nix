@@ -55,7 +55,7 @@ in {
       };
 
       github-runner = {
-        enable = true;
+        enable = false;
         url = "https://github.com/ethnt/orchard";
         tokenFile = config.sops.secrets.github_runner_token.path;
       };

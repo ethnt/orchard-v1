@@ -148,7 +148,7 @@ in {
       };
 
       hercules-ci-agent = {
-        enable = true;
+        enable = false;
         clusterJoinTokenPath =
           config.sops.secrets.hercules_cluster_join_token.path;
         binaryCachesPath = config.sops.secrets.hercules_binary_caches.path;

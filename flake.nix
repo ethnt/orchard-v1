@@ -19,10 +19,7 @@
     let
       pkgsFor = let
         overlay-unstable = final: prev: {
-          unstable = inputs.nixpkgs-unstable {
-            inherit (final) system;
-            config.allowUnfree = true;
-          };
+          unstable = inputs.nixpkgs-unstable.legacyPackages.${final.system};
         };
       in system:
       import nixpkgs {
@@ -101,6 +98,11 @@
         portal = mkDeployment {
           configuration = ./machines/portal/configuration.nix;
           system = "x86_64-linux";
+        };
+
+        branch = mkDeployment {
+          configuration = ./machines/branch/configuration.nix;
+          system = "aarch64-linux";
         };
       };
     } // flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:

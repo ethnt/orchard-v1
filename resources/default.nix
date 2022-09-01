@@ -76,6 +76,21 @@ in {
         wireguard
       ];
     };
+
+    branch-security-group = { resources, ... }: {
+      inherit region;
+      description = "Security group for branch.orchard.computer";
+      rules = [
+        ssh
+        mosh
+        nebula
+        http
+        https
+        prometheus-node-exporter
+        prometheus-nginx-exporter
+        wireguard
+      ];
+    };
   };
 
   # elasticFileSystems = { matrix-elastic-storage = { inherit region; }; };
@@ -94,6 +109,8 @@ in {
     matrix-elastic-ip = { inherit region; };
 
     portal-elastic-ip = { inherit region; };
+
+    branch-elastic-ip = { inherit region; };
   };
 
   route53HostedZones = {
@@ -170,6 +187,13 @@ in {
       domainName = "builder.orchard.computer.";
       ttl = 15;
       recordValues = [ resources.machines.matrix ];
+    };
+
+    aarch64-builder-record-set = { resources, ... }: {
+      zoneId = resources.route53HostedZones.orchard-computer;
+      domainName = "aarch64.builder.orchard.computer.";
+      ttl = 15;
+      recordValues = [ resources.machines.branch ];
     };
 
     sonarr-record-set = { resources, ... }: {

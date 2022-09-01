@@ -19,6 +19,16 @@ in {
     secrets = {
       miniflux_credentials = { sopsFile = ./secrets.yaml; };
       tailscale_auth_key = { sopsFile = ./secrets.yaml; };
+      hercules_binary_caches = {
+        sopsFile = ./secrets.yaml;
+        owner = config.users.users.hercules-ci-agent.name;
+        mode = "0440";
+      };
+      hercules_cluster_join_token = {
+        sopsFile = ./secrets.yaml;
+        owner = config.users.users.hercules-ci-agent.name;
+        mode = "0440";
+      };
     };
   };
 
@@ -135,6 +145,14 @@ in {
       miniflux = {
         enable = true;
         credentialsFile = config.sops.secrets.miniflux_credentials.path;
+      };
+
+      hercules-ci-agent = {
+        enable = true;
+        clusterJoinTokenPath =
+          config.sops.secrets.hercules_cluster_join_token.path;
+        binaryCachesPath = config.sops.secrets.hercules_binary_caches.path;
+        labels = { agent.source = "flake"; };
       };
     };
   };

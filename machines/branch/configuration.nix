@@ -53,6 +53,12 @@ in {
         host = "branch.orchard.computer";
         openFirewall = true;
       };
+
+      github-runner = {
+        enable = true;
+        url = "https://github.com/ethnt/orchard";
+        tokenFile = config.sops.secrets.github_runner_token.path;
+      };
     };
   };
 }

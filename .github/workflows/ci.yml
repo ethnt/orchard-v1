@@ -7,4 +7,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2.4.0
       - uses: cachix/install-nix-action@v17
-      - run: nix flake check
+      - uses: cachix/cachix-action@v10
+        with:
+          name: orchard
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+      - run: nix flake -Lv check --show-trace

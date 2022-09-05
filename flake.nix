@@ -4,7 +4,7 @@
   nixConfig.extra-experimental-features = "nix-command flakes";
   nixConfig.extra-substituters =
     "https://orchard.cachix.org https://nrdxp.cachix.org https://nix-community.cachix.org";
-  nixConfig.extra-trusted-pfublic-keys =
+  nixConfig.extra-trusted-public-keys =
     "orchard.cachix.org-1:QfoahY05xLNfFqWoWCELCMz2I8I92n5W8wNRJo+YT2U= nrdxp.cachix.org-1:Fc5PSqY2Jm1TrWfm88l6cvGWwz3s93c6IOifQWnhNW4= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=";
 
   inputs = {

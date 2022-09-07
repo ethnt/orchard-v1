@@ -6,15 +6,13 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nixpkgs-master.url = "github:nixos/nixpkgs";
 
-    nixops.url = "github:ethnt/nixops-plugged/update-poetry2nix";
-
     sops-nix.url = "github:Mic92/sops-nix";
 
     flake-utils.url = "github:numtide/flake-utils";
     flake-utils.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-master, nixops, sops-nix
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-master, sops-nix
     , flake-utils, ... }@inputs:
     let
       pkgsFor = let
@@ -70,10 +68,10 @@
 
         resources = import ./resources;
 
-        gateway = mkDeployment {
-          configuration = ./machines/gateway/configuration.nix;
-          system = "x86_64-linux";
-        };
+        # gateway = mkDeployment {
+        #   configuration = ./machines/gateway/configuration.nix;
+        #   system = "x86_64-linux";
+        # };
 
         htpc = mkDeployment {
           configuration = ./machines/htpc/configuration.nix;
@@ -99,11 +97,6 @@
           configuration = ./machines/portal/configuration.nix;
           system = "x86_64-linux";
         };
-
-        branch = mkDeployment {
-          configuration = ./machines/branch/configuration.nix;
-          system = "aarch64-linux";
-        };
       };
     } // flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
       let pkgs = nixpkgs-unstable.legacyPackages.${system};
@@ -124,10 +117,8 @@
 
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs;
-            [ age git git-crypt nixfmt ssh-to-age sops ] ++ [
-              nixops.defaultPackage.${system}
-              sops-nix.defaultPackage.${system}
-            ];
+            [ age git git-crypt nixfmt ssh-to-age sops nixopsUnstable ]
+            ++ [ sops-nix.defaultPackage.${system} ];
 
           # TODO: See if this can be done like the other environment variables
           shellHook = ''

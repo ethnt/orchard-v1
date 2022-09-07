@@ -44,6 +44,12 @@
 
   orchard = {
     services = {
+      remote-builder = {
+        enable = true;
+        emulatedSystems = [ ];
+        buildUserPublicKeyFile = ../matrix/remote-builder/builder.pub;
+      };
+
       tailscale = {
         enable = true;
         openFirewall = true;

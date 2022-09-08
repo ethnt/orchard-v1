@@ -10,10 +10,17 @@
 
     flake-utils.url = "github:numtide/flake-utils";
     flake-utils.inputs.nixpkgs.follows = "nixpkgs";
+
+    flake-utils-plus.url = "github:gytis-ivaskevicius/flake-utils-plus";
+    flake-utils-plus.inputs.nixpkgs.follows = "nixpkgs";
+    flake-utils-plus.inputs.flake-utils.follows = "flake-utils";
+
+    devshell.url = "github:numtide/devshell";
+    devshell.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-master, sops-nix
-    , flake-utils, ... }@inputs:
+    , flake-utils, flake-utils-plus, devshell, ... }@inputs:
     let
       pkgsFor = let
         overlay-unstable = final: prev: {
@@ -48,7 +55,13 @@
             ./machines/common.nix;
         in [ common configuration ];
       };
-    in {
+    in flake-utils-plus.lib.mkFlake {
+      inherit self inputs;
+
+      channelsConfig.allowUnfree = true;
+
+      sharedOverlays = [ devshell.overlay ];
+
       nixopsConfigurations.default = {
         inherit nixpkgs;
 
@@ -98,38 +111,12 @@
           system = "x86_64-linux";
         };
       };
-    } // flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
-      let pkgs = nixpkgs-unstable.legacyPackages.${system};
-      in {
-        checks = let
-          runCodeAnalysis = name: command:
-            pkgs.runCommand "orchard-${name}" { } ''
-              cd ${self}
-              ${command}
-              mkdir $out
-            '';
+
+      outputsBuilder = channels:
+        let pkgs = channels.nixpkgs-unstable;
         in {
-          nixfmt = runCodeAnalysis "nixfmt" ''
-            ${pkgs.nixfmt}/bin/nixfmt --check \
-              $(find . -type f -name '*.nix')
-          '';
+          apps = import ./apps { inherit self pkgs; };
+          devShell = import ./shell { inherit self pkgs; };
         };
-
-        devShell = pkgs.mkShell {
-          nativeBuildInputs = with pkgs;
-            [ age git git-crypt nixfmt ssh-to-age sops nixopsUnstable ]
-            ++ [ sops-nix.defaultPackage.${system} ];
-
-          # TODO: See if this can be done like the other environment variables
-          shellHook = ''
-            export AWS_ACCESS_KEY_ID=$(sops -d --extract '["aws_access_key_id"]' ./secrets.yaml)
-            export AWS_SECRET_ACCESS_KEY=$(sops -d --extract '["aws_secret_access_key"]' ./secrets.yaml)
-          '';
-
-          NIXOPS_DEPLOYMENT = "orchard";
-          NIXOPS_STATE = "./state.nixops";
-
-          SOPS_AGE_KEY_DIR = "$HOME/.config/sops/age";
-        };
-      });
+    };
 }

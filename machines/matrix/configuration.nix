@@ -61,11 +61,6 @@ in {
         openFirewall = true;
       };
 
-      filebrowser = {
-        enable = true;
-        srvDir = "/var/www/e10.land";
-      };
-
       nginx = {
         enable = true;
         fqdn = "matrix.orchard.computer";
@@ -82,25 +77,6 @@ in {
                 autoindex on;
                 fancyindex on;
               '';
-            };
-          };
-
-          "filebrowser.e10.land" = {
-            http2 = true;
-
-            forceSSL = true;
-            enableACME = true;
-
-            extraConfig = ''
-              client_max_body_size 100M;
-            '';
-
-            locations."/" = {
-              proxyPass =
-                "http://${nodes.matrix.config.orchard.services.tailscale.fqdn}:${
-                  toString nodes.htpc.config.orchard.services.filebrowser.port
-                }";
-              proxyWebsockets = true;
             };
           };
 

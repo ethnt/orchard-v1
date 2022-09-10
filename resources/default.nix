@@ -32,6 +32,12 @@ in {
       toPort = 51899;
       sourceIp = "0.0.0.0/0";
     };
+    ping = {
+      protocol = "icmp";
+      typeNumber = -1;
+      codeNumber = -1;
+      sourceIp = "0.0.0.0/0";
+    };
   in {
     monitor-security-group = { resources, ... }: {
       inherit region;
@@ -45,6 +51,7 @@ in {
         https
         prometheus-node-exporter
         prometheus-nginx-exporter
+        ping
       ];
     };
 
@@ -59,6 +66,7 @@ in {
         https
         prometheus-node-exporter
         prometheus-nginx-exporter
+        ping
       ];
     };
 
@@ -74,6 +82,7 @@ in {
         prometheus-node-exporter
         prometheus-nginx-exporter
         wireguard
+        ping
       ];
     };
   };

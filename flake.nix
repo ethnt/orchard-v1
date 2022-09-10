@@ -7,13 +7,9 @@
     nixpkgs-master.url = "github:nixos/nixpkgs";
 
     sops-nix.url = "github:Mic92/sops-nix";
-
-    flake-utils.url = "github:numtide/flake-utils";
-    flake-utils.inputs.nixpkgs.follows = "nixpkgs";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
     flake-utils-plus.url = "github:gytis-ivaskevicius/flake-utils-plus";
-    flake-utils-plus.inputs.nixpkgs.follows = "nixpkgs";
-    flake-utils-plus.inputs.flake-utils.follows = "flake-utils";
 
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";

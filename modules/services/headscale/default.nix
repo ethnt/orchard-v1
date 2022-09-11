@@ -24,8 +24,10 @@ in {
   };
 
   config = mkIf cfg.enable {
+    environment.systemPackages = [ cfg.package ];
+
     services.headscale = {
-      inherit (cfg) enable;
+      inherit (cfg) enable package;
       serverUrl = cfg.externalServerUrl;
       dns = {
         baseDomain = "";

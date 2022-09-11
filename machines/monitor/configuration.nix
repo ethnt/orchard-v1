@@ -129,17 +129,17 @@ in {
               ];
             }];
           }
-          {
-            job_name = "gateway";
-            static_configs = [{
-              targets = [
-                "${nodes.gateway.config.orchard.services.tailscale.fqdn}:${
-                  toString
-                  nodes.gateway.config.orchard.services.prometheus-node-exporter.port
-                }"
-              ];
-            }];
-          }
+          # {
+          #   job_name = "gateway";
+          #   static_configs = [{
+          #     targets = [
+          #       "${nodes.gateway.config.orchard.services.tailscale.fqdn}:${
+          #         toString
+          #         nodes.gateway.config.orchard.services.prometheus-node-exporter.port
+          #       }"
+          #     ];
+          #   }];
+          # }
           {
             job_name = "htpc";
             static_configs = [{
@@ -189,17 +189,17 @@ in {
             static_configs =
               [{ targets = [ "metrics.satan.orchard.computer" ]; }];
           }
-          {
-            job_name = "gateway_nginx";
-            static_configs = [{
-              targets = [
-                "${nodes.gateway.config.orchard.services.tailscale.fqdn}:${
-                  toString
-                  nodes.gateway.config.orchard.services.prometheus-nginx-exporter.port
-                }"
-              ];
-            }];
-          }
+          # {
+          #   job_name = "gateway_nginx";
+          #   static_configs = [{
+          #     targets = [
+          #       "${nodes.gateway.config.orchard.services.tailscale.fqdn}:${
+          #         toString
+          #         nodes.gateway.config.orchard.services.prometheus-nginx-exporter.port
+          #       }"
+          #     ];
+          #   }];
+          # }
           {
             job_name = "monitor_nginx";
             static_configs = [{

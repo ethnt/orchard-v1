@@ -7,7 +7,6 @@
     ./github-runner
     ./grafana
     ./headscale
-    ./hercules-ci-agent
     ./jellyfin
     ./loki
     ./mosh

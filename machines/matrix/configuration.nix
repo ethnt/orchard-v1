@@ -19,16 +19,6 @@ in {
     secrets = {
       miniflux_credentials = { sopsFile = ./secrets.yaml; };
       tailscale_auth_key = { sopsFile = ./secrets.yaml; };
-      hercules_binary_caches = {
-        sopsFile = ./secrets.yaml;
-        owner = config.users.users.hercules-ci-agent.name;
-        mode = "0440";
-      };
-      hercules_cluster_join_token = {
-        sopsFile = ./secrets.yaml;
-        owner = config.users.users.hercules-ci-agent.name;
-        mode = "0440";
-      };
     };
   };
 
@@ -71,11 +61,6 @@ in {
         openFirewall = true;
       };
 
-      filebrowser = {
-        enable = true;
-        srvDir = "/var/www/e10.land";
-      };
-
       nginx = {
         enable = true;
         fqdn = "matrix.orchard.computer";
@@ -92,25 +77,6 @@ in {
                 autoindex on;
                 fancyindex on;
               '';
-            };
-          };
-
-          "filebrowser.e10.land" = {
-            http2 = true;
-
-            forceSSL = true;
-            enableACME = true;
-
-            extraConfig = ''
-              client_max_body_size 100M;
-            '';
-
-            locations."/" = {
-              proxyPass =
-                "http://${nodes.matrix.config.orchard.services.tailscale.fqdn}:${
-                  toString nodes.htpc.config.orchard.services.filebrowser.port
-                }";
-              proxyWebsockets = true;
             };
           };
 
@@ -145,14 +111,6 @@ in {
       miniflux = {
         enable = true;
         credentialsFile = config.sops.secrets.miniflux_credentials.path;
-      };
-
-      hercules-ci-agent = {
-        enable = false;
-        clusterJoinTokenPath =
-          config.sops.secrets.hercules_cluster_join_token.path;
-        binaryCachesPath = config.sops.secrets.hercules_binary_caches.path;
-        labels = { agent.source = "flake"; };
       };
     };
   };

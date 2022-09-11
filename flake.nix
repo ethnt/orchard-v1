@@ -6,16 +6,17 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nixpkgs-master.url = "github:nixos/nixpkgs";
 
-    nixops.url = "github:ethnt/nixops-plugged/update-poetry2nix";
-
     sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
     flake-utils.url = "github:numtide/flake-utils";
-    flake-utils.inputs.nixpkgs.follows = "nixpkgs";
+
+    devshell.url = "github:numtide/devshell";
+    devshell.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-master, nixops, sops-nix
-    , flake-utils, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-master, sops-nix
+    , flake-utils, devshell, ... }@inputs:
     let
       pkgsFor = let
         overlay-unstable = final: prev: {
@@ -23,7 +24,7 @@
         };
       in system:
       import nixpkgs {
-        inherit system;
+        localSystem = { inherit system; };
         overlays = [ overlay-unstable ];
         config.allowUnfree = true;
       };
@@ -70,11 +71,6 @@
 
         resources = import ./resources;
 
-        gateway = mkDeployment {
-          configuration = ./machines/gateway/configuration.nix;
-          system = "x86_64-linux";
-        };
-
         htpc = mkDeployment {
           configuration = ./machines/htpc/configuration.nix;
           system = "x86_64-linux";
@@ -99,46 +95,12 @@
           configuration = ./machines/portal/configuration.nix;
           system = "x86_64-linux";
         };
-
-        branch = mkDeployment {
-          configuration = ./machines/branch/configuration.nix;
-          system = "aarch64-linux";
-        };
       };
-    } // flake-utils.lib.eachSystem [ "x86_64-darwin" "x86_64-linux" ] (system:
+    } // flake-utils.lib.eachDefaultSystem (system:
       let pkgs = nixpkgs-unstable.legacyPackages.${system};
       in {
-        checks = let
-          runCodeAnalysis = name: command:
-            pkgs.runCommand "orchard-${name}" { } ''
-              cd ${self}
-              ${command}
-              mkdir $out
-            '';
-        in {
-          nixfmt = runCodeAnalysis "nixfmt" ''
-            ${pkgs.nixfmt}/bin/nixfmt --check \
-              $(find . -type f -name '*.nix')
-          '';
-        };
-
-        devShell = pkgs.mkShell {
-          nativeBuildInputs = with pkgs;
-            [ age git git-crypt nixfmt ssh-to-age sops ] ++ [
-              nixops.defaultPackage.${system}
-              sops-nix.defaultPackage.${system}
-            ];
-
-          # TODO: See if this can be done like the other environment variables
-          shellHook = ''
-            export AWS_ACCESS_KEY_ID=$(sops -d --extract '["aws_access_key_id"]' ./secrets.yaml)
-            export AWS_SECRET_ACCESS_KEY=$(sops -d --extract '["aws_secret_access_key"]' ./secrets.yaml)
-          '';
-
-          NIXOPS_DEPLOYMENT = "orchard";
-          NIXOPS_STATE = "./state.nixops";
-
-          SOPS_AGE_KEY_DIR = "$HOME/.config/sops/age";
-        };
+        apps = import ./apps { inherit self pkgs; };
+        lib = import ./lib { lib = flake-utils.lib // nixpkgs.lib; };
+        devShell = import ./shell { inherit self pkgs; };
       });
 }

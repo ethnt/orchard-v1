@@ -32,6 +32,12 @@ in {
       toPort = 51899;
       sourceIp = "0.0.0.0/0";
     };
+    ping = {
+      protocol = "icmp";
+      typeNumber = -1;
+      codeNumber = -1;
+      sourceIp = "0.0.0.0/0";
+    };
   in {
     monitor-security-group = { resources, ... }: {
       inherit region;
@@ -45,6 +51,7 @@ in {
         https
         prometheus-node-exporter
         prometheus-nginx-exporter
+        ping
       ];
     };
 
@@ -59,6 +66,7 @@ in {
         https
         prometheus-node-exporter
         prometheus-nginx-exporter
+        ping
       ];
     };
 
@@ -74,21 +82,7 @@ in {
         prometheus-node-exporter
         prometheus-nginx-exporter
         wireguard
-      ];
-    };
-
-    branch-security-group = { resources, ... }: {
-      inherit region;
-      description = "Security group for branch.orchard.computer";
-      rules = [
-        ssh
-        mosh
-        nebula
-        http
-        https
-        prometheus-node-exporter
-        prometheus-nginx-exporter
-        wireguard
+        ping
       ];
     };
   };
@@ -161,12 +155,12 @@ in {
       recordValues = [ resources.machines.monitor ];
     };
 
-    gateway-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "gateway.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
-    };
+    # gateway-record-set = { resources, ... }: {
+    #   zoneId = resources.route53HostedZones.orchard-computer;
+    #   domainName = "gateway.orchard.computer.";
+    #   ttl = 15;
+    #   recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+    # };
 
     matrix-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;
@@ -187,13 +181,6 @@ in {
       domainName = "builder.orchard.computer.";
       ttl = 15;
       recordValues = [ resources.machines.matrix ];
-    };
-
-    aarch64-builder-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "aarch64.builder.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.branch ];
     };
 
     sonarr-record-set = { resources, ... }: {
@@ -245,12 +232,12 @@ in {
       recordValues = [ resources.machines.portal ];
     };
 
-    metrics-satan-record-set = { resources, ... }: {
-      zoneId = resources.route53HostedZones.orchard-computer;
-      domainName = "metrics.satan.orchard.computer.";
-      ttl = 15;
-      recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
-    };
+    # metrics-satan-record-set = { resources, ... }: {
+    #   zoneId = resources.route53HostedZones.orchard-computer;
+    #   domainName = "metrics.satan.orchard.computer.";
+    #   ttl = 15;
+    #   recordValues = [ resources.machines.gateway.networking.publicIPv4 ];
+    # };
 
     pve-record-set = { resources, ... }: {
       zoneId = resources.route53HostedZones.orchard-computer;

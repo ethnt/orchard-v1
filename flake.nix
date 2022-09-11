@@ -9,14 +9,14 @@
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
-    flake-utils-plus.url = "github:gytis-ivaskevicius/flake-utils-plus";
+    flake-utils.url = "github:numtide/flake-utils";
 
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-master, sops-nix
-    , flake-utils, flake-utils-plus, devshell, ... }@inputs:
+    , flake-utils, devshell, ... }@inputs:
     let
       pkgsFor = let
         overlay-unstable = final: prev: {
@@ -24,7 +24,7 @@
         };
       in system:
       import nixpkgs {
-        inherit system;
+        localSystem = { inherit system; };
         overlays = [ overlay-unstable ];
         config.allowUnfree = true;
       };
@@ -51,13 +51,7 @@
             ./machines/common.nix;
         in [ common configuration ];
       };
-    in flake-utils-plus.lib.mkFlake {
-      inherit self inputs;
-
-      channelsConfig.allowUnfree = true;
-
-      sharedOverlays = [ devshell.overlay ];
-
+    in {
       nixopsConfigurations.default = {
         inherit nixpkgs;
 
@@ -76,11 +70,6 @@
         };
 
         resources = import ./resources;
-
-        # gateway = mkDeployment {
-        #   configuration = ./machines/gateway/configuration.nix;
-        #   system = "x86_64-linux";
-        # };
 
         htpc = mkDeployment {
           configuration = ./machines/htpc/configuration.nix;
@@ -107,12 +96,11 @@
           system = "x86_64-linux";
         };
       };
-
-      outputsBuilder = channels:
-        let pkgs = channels.nixpkgs-unstable;
-        in {
-          apps = import ./apps { inherit self pkgs; };
-          devShell = import ./shell { inherit self pkgs; };
-        };
-    };
+    } // flake-utils.lib.eachDefaultSystem (system:
+      let pkgs = nixpkgs-unstable.legacyPackages.${system};
+      in {
+        apps = import ./apps { inherit self pkgs; };
+        lib = import ./lib { lib = flake-utils.lib // nixpkgs.lib; };
+        devShell = import ./shell { inherit self pkgs; };
+      });
 }

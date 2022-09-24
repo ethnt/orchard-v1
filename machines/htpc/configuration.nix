@@ -16,11 +16,14 @@
 
   networking.privateIPv4 = "192.168.1.44";
 
+  # mono has issues with ipv6
+  networking.enableIPv6 = false;
+
   environment.systemPackages = with pkgs; [ handbrake ];
 
   # TODO: Make other systemd services (sonarr, etc) require mount to finish first
   fileSystems."/mnt/omnibus" = {
-    device = "192.168.1.12:/mnt/omnibus/htpc";
+    device = "192.168.1.43:/mnt/omnibus/htpc";
     fsType = "nfs";
     options = [
       "noauto"
@@ -95,7 +98,7 @@
       };
 
       tautulli = {
-        enable = true;
+        enable = false;
         openFirewall = true;
       };
 

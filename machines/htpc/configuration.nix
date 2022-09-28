@@ -1,5 +1,5 @@
 { config, pkgs, resources, nodes, ... }: {
-  deployment = { targetHost = "192.168.1.44"; };
+  deployment = { targetHost = "100.64.0.3"; };
 
   imports = [ ../../profiles/virtualized ./hardware-configuration.nix ];
 
@@ -47,12 +47,6 @@
 
   orchard = {
     services = {
-      remote-builder = {
-        enable = true;
-        emulatedSystems = [ ];
-        buildUserPublicKeyFile = ../matrix/remote-builder/builder.pub;
-      };
-
       tailscale = {
         enable = true;
         openFirewall = true;

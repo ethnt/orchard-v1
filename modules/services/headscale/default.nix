@@ -37,20 +37,20 @@ in {
         mkMerge [ { grpc_listen_addr = "127.0.0.1:50443"; } cfg.extraSettings ];
     };
 
-    systemd.services."headscale-provisioning" = {
-      serviceConfig.Type = "oneshot";
+    # systemd.services."headscale-provisioning" = {
+    #   serviceConfig.Type = "oneshot";
 
-      after = [ "headscale.service" ];
-      wantedBy = [ "headscale.service" ];
+    #   after = [ "headscale.service" ];
+    #   wantedBy = [ "headscale.service" ];
 
-      script = ''
-        # Wait for headscale to be ready
-        sleep 2
+    #   script = ''
+    #     # Wait for headscale to be ready
+    #     sleep 2
 
-        ${concatStringsSep "\n" (map (namespace:
-          "${cfg.package}/bin/headscale namespaces create ${namespace}")
-          cfg.namespaces)}
-      '';
-    };
+    #     ${concatStringsSep "\n" (map (namespace:
+    #       "${cfg.package}/bin/headscale namespaces create ${namespace}")
+    #       cfg.namespaces)}
+    #   '';
+    # };
   };
 }

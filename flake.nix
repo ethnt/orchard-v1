@@ -18,16 +18,13 @@
   outputs = { self, nixpkgs, nixpkgs-unstable, nixpkgs-master, sops-nix
     , flake-utils, devshell, ... }@inputs:
     let
-      pkgsFor = let
-        overlay-unstable = final: prev: {
-          unstable = inputs.nixpkgs-unstable.legacyPackages.${final.system};
+      pkgsFor = system:
+        let unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
+        in import nixpkgs {
+          localSystem = { inherit system; };
+          overlays = [ (self: super: { prowlarr = unstable.prowlarr; }) ];
+          config.allowUnfree = true;
         };
-      in system:
-      import nixpkgs {
-        localSystem = { inherit system; };
-        overlays = [ overlay-unstable ];
-        config.allowUnfree = true;
-      };
 
       mkDeployment = { system, configuration, initialDeploy ? false }: {
         nixpkgs = {

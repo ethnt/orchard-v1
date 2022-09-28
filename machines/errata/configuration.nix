@@ -1,7 +1,11 @@
 { config, pkgs, resources, nodes, ... }: {
   deployment = { targetHost = "192.168.1.45"; };
 
-  imports = [ ../../profiles/virtualized ./hardware-configuration.nix ];
+  imports = [
+    ../../profiles/virtualized
+    ../../profiles/printing
+    ./hardware-configuration.nix
+  ];
 
   sops = {
     secrets = { tailscale_auth_key = { sopsFile = ./secrets.yaml; }; };
